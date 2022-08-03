@@ -20,12 +20,12 @@ int main() {
 
         window.ClearBackground(BLACK);
 
-        window.DrawFPS(10, 570);
         entityHandler.update(GetFrameTime());
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
             entityHandler.add(new Player(&entityHandler, GetMouseX(), GetMouseY()));
         }
 
+        window.DrawFPS(10, 570);
         window.EndDrawing();
     }
 

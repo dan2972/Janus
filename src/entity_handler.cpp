@@ -26,6 +26,7 @@ namespace Janus {
             }
             actorList.pop_back();
             actorIndexMap.erase(obj);
+            delete obj;
         }
         toDelete.clear();
 
