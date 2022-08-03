@@ -33,7 +33,9 @@ if (NOT raylib_cpp_FOUND)
     FetchContent_MakeAvailable(raylib_cpp)
 endif()
 
-set(SOURCES src/main.cpp)
+include_directories(include)
+
+set(SOURCES src/main.cpp include/game_object.hpp include/entity_handler.hpp src/entity_handler.cpp include/player.hpp)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 target_link_libraries(${PROJECT_NAME} raylib raylib_cpp)

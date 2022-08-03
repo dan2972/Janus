@@ -1,5 +1,8 @@
-#include <iostream>
 #include <raylib-cpp.hpp>
+#include "entity_handler.hpp"
+#include "player.hpp"
+
+using namespace Janus;
 
 int main() {
     int screenWidth = 800;
@@ -9,15 +12,19 @@ int main() {
     //SetTargetFPS(60);
     window.SetState(FLAG_VSYNC_HINT);
 
+    EntityHandler entityHandler;
+
     while (!window.ShouldClose())
     {
         window.BeginDrawing();
 
-        window.ClearBackground(RAYWHITE);
+        window.ClearBackground(BLACK);
 
         window.DrawFPS(10, 570);
-
-        DrawText("Janus", 190, 200, 20, LIGHTGRAY);
+        entityHandler.update(GetFrameTime());
+        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+            entityHandler.add(new Player(&entityHandler, GetMouseX(), GetMouseY()));
+        }
 
         window.EndDrawing();
     }
