@@ -35,7 +35,7 @@ endif()
 
 include_directories(include)
 
-set(SOURCES src/main.cpp include/game_object.hpp include/entity_handler.hpp src/entity_handler.cpp include/player.hpp)
+set(SOURCES src/main.cpp include/game_object.hpp include/entity_handler.hpp src/entity_handler.cpp include/player.hpp include/texture_manager.hpp src/texture_manager.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 target_link_libraries(${PROJECT_NAME} raylib raylib_cpp)
@@ -46,3 +46,13 @@ if (APPLE)
     target_link_libraries(${PROJECT_NAME} "-framework Cocoa")
     target_link_libraries(${PROJECT_NAME} "-framework OpenGL")
 endif()
+
+#resource files
+function(copy_resources)
+    foreach(arg IN LISTS ARGN)
+        configure_file(${arg} ${arg} COPYONLY)
+    endforeach()
+endfunction()
+copy_resources(
+        resources/slime.png
+        )

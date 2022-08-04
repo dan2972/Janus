@@ -1,6 +1,7 @@
 #include <raylib-cpp.hpp>
 #include "entity_handler.hpp"
 #include "player.hpp"
+#include "texture_manager.hpp"
 
 using namespace Janus;
 
@@ -13,6 +14,7 @@ int main() {
     window.SetState(FLAG_VSYNC_HINT);
 
     EntityHandler entityHandler;
+    TextureManager::loadTexture("resources/slime.png");
 
     while (!window.ShouldClose())
     {
