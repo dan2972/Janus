@@ -1,7 +1,7 @@
 #ifndef JANUS_GAME_OBJECT_HPP
 #define JANUS_GAME_OBJECT_HPP
 
-#include <glm/glm.hpp>
+#include <glm/vec2.hpp>
 
 namespace Janus {
     class GameObject {
@@ -9,15 +9,20 @@ namespace Janus {
         GameObject() = default;
         virtual ~GameObject() = default;
 
-        virtual void update(float deltaTime) = 0;
+        virtual void tick(float deltaTime) = 0;
         virtual void render() = 0;
 
         enum type {
             ACTOR,
             NONE
         };
+
+        glm::vec2 getPos() { return position; }
+        glm::vec2 getSize() { return size; }
+
     protected:
         glm::vec2 position{};
+        glm::vec2 size{};
     };
 }
 

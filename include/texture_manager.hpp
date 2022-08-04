@@ -8,8 +8,8 @@
 namespace Janus {
     class TextureManager {
     public:
-        static void loadTexture(const std::string& path);
-        static raylib::Texture2D* getTexture(const std::string& path);
+        static void LoadTexture(const std::string& path);
+        static raylib::Texture2D* GetTexture(const std::string& path);
 
     private:
         static std::unordered_map<std::string, raylib::Texture2D> textures;

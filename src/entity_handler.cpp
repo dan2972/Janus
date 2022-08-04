@@ -36,7 +36,7 @@ namespace Janus {
 
     void EntityHandler::tick(float deltaTime) {
         for (auto & obj : actorList) {
-            obj->update(deltaTime);
+            obj->tick(deltaTime);
         }
     }
 
