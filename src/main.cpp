@@ -2,6 +2,7 @@
 #include "entity_handler.hpp"
 #include "player.hpp"
 #include "texture_manager.hpp"
+#include "tilemap.hpp"
 
 using namespace Janus;
 
@@ -15,14 +16,30 @@ int main() {
 
     EntityHandler entityHandler;
     TextureManager::LoadTexture("resources/slime.png");
-    entityHandler.add(new Player(&entityHandler, 10, 10));
+    Player* player = new Player(&entityHandler, 10, 10);
+    entityHandler.add(player);
     entityHandler.add(new Actor(&entityHandler, 100, 100));
+
+    Tilemap tilemap;
 
     while (!window.ShouldClose())
     {
         window.BeginDrawing();
 
         window.ClearBackground(BLACK);
+
+        int playerChunkX = player->getPos().x > 0 ? (int)player->getPos().x / (Chunk::CHUNK_SIZE*Tile::TILE_SIZE) :
+                                                    (int)(player->getPos().x - Chunk::CHUNK_SIZE*Tile::TILE_SIZE)/ (Chunk::CHUNK_SIZE*Tile::TILE_SIZE);
+        int playerChunkY = player->getPos().y > 0 ? (int)player->getPos().y / (Chunk::CHUNK_SIZE*Tile::TILE_SIZE) :
+                           (int)(player->getPos().y - Chunk::CHUNK_SIZE*Tile::TILE_SIZE)/ (Chunk::CHUNK_SIZE*Tile::TILE_SIZE);
+
+        if (!tilemap.chunkExistsAt(playerChunkX, playerChunkY)) {
+            tilemap.addChunk(new Chunk(playerChunkX, playerChunkY));
+        }
+
+        for (auto & it : tilemap.getChunkMap()) {
+            it.second->render();
+        }
 
         entityHandler.update(GetFrameTime());
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {

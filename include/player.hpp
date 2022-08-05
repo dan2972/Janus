@@ -9,7 +9,7 @@
 namespace Janus {
     class Player : public Actor {
     public:
-        explicit Player(EntityHandler *entityHandler, int x, int y) : Actor(entityHandler, x, y){
+        explicit Player(EntityHandler *entityHandler, float x, float y) : Actor(entityHandler, x, y){
             size.x = 32;
             size.y = 32;
 

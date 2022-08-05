@@ -46,7 +46,7 @@ namespace Janus {
         }
     }
 
-    std::vector<GameObject*> EntityHandler::getList(GameObject::type type) {
+    std::vector<GameObject*>& EntityHandler::getList(GameObject::type type) {
         switch (type) {
             case GameObject::type::ACTOR:
                 return this->actorList;

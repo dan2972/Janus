@@ -8,9 +8,9 @@
 namespace Janus {
     class Actor : public GameObject {
     public:
-        explicit Actor(EntityHandler* entityHandler, int x, int y) : entityHandler{entityHandler} {
-            position.x = (float)x;
-            position.y = (float)y;
+        explicit Actor(EntityHandler* entityHandler, float x, float y) : entityHandler{entityHandler} {
+            position.x = x;
+            position.y = y;
             size.x = 32;
             size.y = 32;
         }

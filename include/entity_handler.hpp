@@ -16,7 +16,7 @@ namespace Janus {
 
         void update(float deltaTime);
 
-        std::vector<GameObject*> getList(GameObject::type type);
+        std::vector<GameObject*>& getList(GameObject::type type);
 
     private:
         void tick(float deltaTime);
