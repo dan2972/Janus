@@ -20,7 +20,7 @@ namespace Janus {
         }
 
         void render() override {
-            DrawRectangle((int)position.x, (int)position.y, 32, 32, raylib::Color(200,255,200));
+            DrawRectangle((int)position.x, (int)position.y, (int)size.x, (int)size.y, raylib::Color(200,255,200));
         }
 
         glm::vec2 velocity{};

@@ -52,7 +52,6 @@ namespace Janus {
                                     {0, 0}, 0, WHITE);
         }
     private:
-        EntityHandler* entityHandler = nullptr;
         raylib::Texture2D* texture = nullptr;
 
         float timer = 0;
