@@ -12,17 +12,23 @@ namespace Janus {
         virtual void tick() = 0;
         virtual void render(float dt) = 0;
 
-        enum type {
+        enum Type {
             ACTOR,
+            PROJECTILE,
+            PARTICLE,
+            TILE,
             NONE
         };
 
         glm::vec2 getPos() { return position; }
         glm::vec2 getSize() { return size; }
+        Type getType() { return type; }
 
     protected:
         glm::vec2 position{};
         glm::vec2 size{};
+
+        Type type = Type::NONE;
     };
 }
 

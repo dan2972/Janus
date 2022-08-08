@@ -12,11 +12,13 @@ namespace Janus {
         Tile() {
             position = {0, 0};
             size = {TILE_SIZE, TILE_SIZE};
+            type = Type::TILE;
         }
 
         Tile(float x, float y) {
             position = {x, y};
             size = {TILE_SIZE, TILE_SIZE};
+            type = Type::TILE;
         }
 
         void tick() override {

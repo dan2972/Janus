@@ -13,6 +13,7 @@ namespace Janus {
             position.y = y;
             size.x = 32;
             size.y = 32;
+            type = Type::ACTOR;
         }
 
         void tick() override {
