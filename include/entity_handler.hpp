@@ -25,6 +25,7 @@ namespace Janus {
         std::vector<GameObject*> actorList;
         std::unordered_map<GameObject*, unsigned int> actorIndexMap;
         std::vector<GameObject*> toDelete;
+        std::vector<GameObject*> toAdd;
     };
 }
 

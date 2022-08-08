@@ -8,8 +8,7 @@ namespace Janus {
     }
 
     void EntityHandler::add(GameObject *obj) {
-        actorIndexMap.insert({obj, actorList.size()});
-        actorList.push_back(obj);
+        toAdd.push_back(obj);
     }
 
     void EntityHandler::remove(GameObject* obj) {
@@ -28,6 +27,12 @@ namespace Janus {
             delete obj;
         }
         toDelete.clear();
+
+        for (auto obj : toAdd) {
+            actorIndexMap.insert({obj, actorList.size()});
+            actorList.push_back(obj);
+        }
+        toAdd.clear();
 
         tick();
     }

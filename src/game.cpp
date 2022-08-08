@@ -36,7 +36,7 @@ namespace Janus {
 
             if (GetTime() - timer > 1) {
                 ++timer;
-                std::cout << "FPS: " << frames << std::endl;
+                FPS = frames;
                 frames = 0;
             }
         }
@@ -65,6 +65,8 @@ namespace Janus {
         }
 
         entityHandler.render(dt);
+
+        DrawText(std::string("FPS: " + std::to_string(FPS)).c_str(), 10, 570, 16, WHITE);
 
         //window.DrawFPS(10, 570);
         window.EndDrawing();

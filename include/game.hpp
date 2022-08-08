@@ -23,6 +23,8 @@ namespace Janus {
 
         void update();
         void render(float dt);
+
+        int FPS = 0;
     };
 }
 
