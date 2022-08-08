@@ -7,13 +7,15 @@ namespace Janus {
 
     Game::Game() {
         //SetTargetFPS(60);
-        window.ClearState(FLAG_VSYNC_HINT);
+        window.SetState(FLAG_VSYNC_HINT);
 
         TextureManager::LoadTexture("resources/slime.png");
         player = new Player(10, 10, &entityHandler);
         entityHandler.add(player);
         entityHandler.add(new Actor(100, 100, &entityHandler));
         entityHandler.add(new Actor(132, 100, &entityHandler));
+
+        camera.setTargetPlayer(player);
     }
 
     void Game::run() {
@@ -47,13 +49,18 @@ namespace Janus {
     }
 
     void Game::render(float dt) {
+        camera.update();
+
         window.BeginDrawing();
 
-        window.ClearBackground(BLACK);
+            window.ClearBackground(BLACK);
+                camera.start();
 
-        entityHandler.render(dt);
+                    entityHandler.render(dt);
 
-        DrawText(std::string("FPS: " + std::to_string(FPS)).c_str(), 10, 570, 16, WHITE);
+                camera.end();
+
+            DrawText(std::string("FPS: " + std::to_string(FPS)).c_str(), 10, 570, 16, WHITE);
 
         //window.DrawFPS(10, 570);
         window.EndDrawing();

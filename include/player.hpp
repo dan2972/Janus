@@ -48,7 +48,7 @@ namespace Janus {
         }
 
         void render(float dt) override {
-            glm::vec2 renderPos = glm::mix(lastPos, position, dt);
+            renderPos = glm::mix(lastPos, position, dt);
 
             DrawTexturePro(*texture, raylib::Rectangle({0,0}, {(float)texture->width, (float)texture->height}),
                                     raylib::Rectangle({renderPos.x, renderPos.y}, {size.x, size.y}),
