@@ -14,13 +14,13 @@ namespace Janus {
         void add(GameObject* obj);
         void remove(GameObject* obj);
 
-        void update(float deltaTime);
+        void update();
+        void render(float dt);
 
         std::vector<GameObject*>& getList(GameObject::type type);
 
     private:
-        void tick(float deltaTime);
-        void render();
+        void tick();
 
         std::vector<GameObject*> actorList;
         std::unordered_map<GameObject*, unsigned int> actorIndexMap;

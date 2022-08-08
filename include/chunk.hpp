@@ -23,18 +23,18 @@ namespace Janus {
             }
         }
 
-        void tick(float deltaTime) {
+        void tick() {
             for (unsigned char i = 0; i < CHUNK_SIZE; ++i) {
                 for (unsigned char j = 0; j < CHUNK_SIZE; ++j) {
-                    tileChunk[i][j]->tick(deltaTime);
+                    tileChunk[i][j]->tick();
                 }
             }
         }
 
-        void render() {
+        void render(float dt) {
             for (unsigned char i = 0; i < CHUNK_SIZE; ++i) {
                 for (unsigned char j = 0; j < CHUNK_SIZE; ++j) {
-                    tileChunk[i][j]->render();
+                    tileChunk[i][j]->render(dt);
                 }
             }
         }

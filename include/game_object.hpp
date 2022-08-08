@@ -9,8 +9,8 @@ namespace Janus {
         GameObject() = default;
         virtual ~GameObject() = default;
 
-        virtual void tick(float deltaTime) = 0;
-        virtual void render() = 0;
+        virtual void tick() = 0;
+        virtual void render(float dt) = 0;
 
         enum type {
             ACTOR,

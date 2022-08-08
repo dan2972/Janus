@@ -15,11 +15,11 @@ namespace Janus {
             size.y = 32;
         }
 
-        void tick(float deltaTime) override {
-            handleMovement(deltaTime);
+        void tick() override {
+            handleMovement();
         }
 
-        void render() override {
+        void render(float dt) override {
             DrawRectangle((int)position.x, (int)position.y, (int)size.x, (int)size.y, raylib::Color(200,255,200));
         }
 
@@ -30,18 +30,18 @@ namespace Janus {
         raylib::Texture2D* texture = nullptr;
 
         bool collidesWithActors = false;
-
+        bool colliding = false;
         enum CollisionResponseType {
             STOP,
             SLIDE
         };
         CollisionResponseType collisionResponseType = CollisionResponseType::STOP;
 
-        bool colliding = false;
+        glm::vec2 lastPos{};
 
     private:
-        void handleMovement(float deltaTime);
-        void handleCollision(GameObject* obj, float deltaTime);
+        void handleMovement();
+        void handleCollision(GameObject* obj);
     };
 }
 

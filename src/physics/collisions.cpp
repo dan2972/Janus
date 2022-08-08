@@ -1,80 +1,15 @@
-#include <limits>
 #include <algorithm>
+#include <cmath>
 #include "physics/collisions.hpp"
 
 namespace Janus {
     // Simple AABB collision using two boxes
-    bool Collisions::AABB(glm::vec4 b1, glm::vec4 b2) {
+    bool Collisions::AABB(const glm::vec4& b1, const glm::vec4& b2) {
         return !(b1.x + b1.z < b2.x || b1.x > b2.x + b2.z || b1.y + b1.w < b2.y || b1.y > b2.y + b2.w);
     }
 
-    // Calculates the collision time using swept AABB with moving box 1 and stationary box 2
-    // Takes in empty normals to output onto
-    float Collisions::SweptAABB(glm::vec4 box1, glm::vec2 velocity, glm::vec4 box2, glm::vec2& normal) {
-        glm::vec2 invEntry;
-        glm::vec2 invExit;
-
-        if (velocity.x > 0) {
-            invEntry.x = box2.x - (box1.x + box1.z);
-            invExit.x = (box2.x + box2.z) - box1.x;
-        } else {
-            invEntry.x = (box2.x + box2.z) - box1.x;
-            invExit.x = box2.x - (box1.x + box1.z);
-        }
-
-        if (velocity.y > 0) {
-            invEntry.y = box2.y - (box1.y + box1.w);
-            invExit.y = (box2.y + box2.w) - box1.y;
-        } else {
-            invEntry.y = (box2.y + box2.w) - box1.y;
-            invExit.y = box2.y - (box1.y + box1.w);
-        }
-
-        glm::vec2 entry;
-        glm::vec2 exit;
-
-        if (velocity.x == 0) {
-            entry.x = -std::numeric_limits<float>::infinity();
-            exit.x = std::numeric_limits<float>::infinity();
-        } else {
-            entry.x = invEntry.x / velocity.x;
-            exit.x = invExit.x / velocity.x;
-        }
-
-        if (velocity.y == 0) {
-            entry.y = -std::numeric_limits<float>::infinity();
-            exit.y = std::numeric_limits<float>::infinity();
-        } else {
-            entry.y = invEntry.y / velocity.y;
-            exit.y = invExit.y / velocity.y;
-        }
-
-        float entryTime = std::max(entry.x, entry.y);
-        float exitTime = std::min(exit.x, exit.y);
-
-        if (entryTime > exitTime || entry.x < 0 && entry.y < 0 || entry.x > 1 || entry.y > 1) {
-            normal = {0, 0};
-            return 1.0f;
-        } else {
-            if (entry.x > entry.y) {
-                if (invEntry.x < 0) {
-                    normal = {1, 0};
-                } else {
-                    normal = {-1, 0};
-                }
-            } else {
-                if (invEntry.y < 0) {
-                    normal = {0, 1};
-                } else {
-                    normal = {0, -1};
-                }
-            }
-            return entryTime;
-        }
-    }
-
     // Used along with Swept AABB to get broad phase box of the moving box
-    glm::vec4 Collisions::GetSweptBroadPhaseBox(glm::vec4 box, glm::vec2 velocity) {
+    glm::vec4 Collisions::GetSweptBroadPhaseBox(const glm::vec4& box, const glm::vec2& velocity) {
         glm::vec4 broadPhaseBox;
         broadPhaseBox.x = velocity.x > 0 ? box.x : box.x + velocity.x;
         broadPhaseBox.y = velocity.y > 0 ? box.y : box.y + velocity.y;
@@ -83,4 +18,63 @@ namespace Janus {
 
         return broadPhaseBox;
     }
+
+    // Takes in a ray origin and direction with a target rect to find the collision normal and hit Time [0.0, 1.0]
+    bool Collisions::RayVsRect(const glm::vec2 &rayOrigin, const glm::vec2 &rayDir, const glm::vec4 &target,
+                               glm::vec2 &normal, float &tHitNear) {
+        normal = {0, 0};
+
+        glm::vec2 invDir = 1.0f / rayDir;
+
+        glm::vec2 t_near = (glm::vec2{target.x, target.y} - rayOrigin) * invDir;
+        glm::vec2 t_far = (glm::vec2{target.x + target.z, target.y + target.w} - rayOrigin) * invDir;
+
+        if (std::isnan(t_far.y) || std::isnan(t_far.x)) return false;
+        if (std::isnan(t_near.y) || std::isnan(t_near.x)) return false;
+
+        if (t_near.x > t_far.x) std::swap(t_near.x, t_far.x);
+        if (t_near.y > t_far.y) std::swap(t_near.y, t_far.y);
+
+        if (t_near.x > t_far.y || t_near.y > t_far.x) return false;
+
+        tHitNear = std::max(t_near.x, t_near.y);
+
+        float tHitFar = std::min(t_far.x, t_far.y);
+
+        if (tHitFar < 0) return false;
+
+        if (t_near.x > t_near.y)
+            if (invDir.x < 0)
+                normal = {1, 0};
+            else
+                normal = {-1, 0};
+        else
+            if (invDir.y < 0)
+                normal = {0, 1};
+            else
+                normal = {0, -1};
+
+        return true;
+    }
+
+    // Checks if a dynamic rectangle collides with a static rectangle using SweptAABB (shooting ray on expanded rect)
+    // Returns whether collision happened and the normal and contact time of the collision
+    bool Collisions::SweptAABB(const glm::vec4 &rectDynamic, const glm::vec2 &velocity, const glm::vec4 &rectStatic,
+                               glm::vec2 &normal, float &contactTime) {
+        if (velocity.x == 0 && velocity.y == 0) return false;
+
+        glm::vec4 expandedRect;
+        expandedRect.x = rectStatic.x - rectDynamic.z / 2;
+        expandedRect.y = rectStatic.y - rectDynamic.w / 2;
+        expandedRect.z = rectStatic.z + rectDynamic.z;
+        expandedRect.w = rectStatic.w + rectDynamic.w;
+
+        if (RayVsRect({rectDynamic.x + rectDynamic.z / 2, rectDynamic.y + rectDynamic.w / 2},
+                      velocity, expandedRect, normal, contactTime)) {
+            return (contactTime >= 0.0f && contactTime < 1.0f);
+        } else {
+            return false;
+        }
+    }
+
 }

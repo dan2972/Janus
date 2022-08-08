@@ -1,4 +1,3 @@
-#include <iostream>
 #include "entity_handler.hpp"
 
 namespace Janus {
@@ -17,7 +16,7 @@ namespace Janus {
         toDelete.push_back(obj);
     }
 
-    void EntityHandler::update(float deltaTime) {
+    void EntityHandler::update() {
 
         for (auto obj : toDelete) {
             if (obj != actorList.back()) {
@@ -30,19 +29,18 @@ namespace Janus {
         }
         toDelete.clear();
 
-        tick(deltaTime);
-        render();
+        tick();
     }
 
-    void EntityHandler::tick(float deltaTime) {
+    void EntityHandler::tick() {
         for (auto & obj : actorList) {
-            obj->tick(deltaTime);
+            obj->tick();
         }
     }
 
-    void EntityHandler::render() {
+    void EntityHandler::render(float dt) {
         for (auto & obj : actorList) {
-            obj->render();
+            obj->render(dt);
         }
     }
 

@@ -21,12 +21,12 @@ namespace Janus {
             chunkMap.insert({std::to_string(chunk->getChunkX()) + "," + std::to_string(chunk->getChunkY()), chunk});
         }
 
-        void tickChunk(int chunkX, int chunkY, float deltaTime) {
-            getChunk(chunkX, chunkY)->tick(deltaTime);
+        void tickChunk(int chunkX, int chunkY) {
+            getChunk(chunkX, chunkY)->tick();
         }
 
-        void renderChunk(int chunkX, int chunkY) {
-            getChunk(chunkX, chunkY)->render();
+        void renderChunk(int chunkX, int chunkY, float dt) {
+            getChunk(chunkX, chunkY)->render(dt);
         }
 
         bool chunkExistsAt(int chunkX, int chunkY) {

@@ -1,47 +1,37 @@
-#include <iostream>
+#include <glm/glm.hpp>
 #include "actor.hpp"
 #include "physics/collisions.hpp"
 
 namespace Janus {
-    void Actor::handleMovement(float deltaTime) {
+    void Actor::handleMovement() {
+        lastPos = position;
         if (collidesWithActors) {
             for (auto obj : entityHandler->getList(GameObject::ACTOR)) {
                 if (obj != this) {
-                    handleCollision(obj, deltaTime);
+                    handleCollision(obj);
                 }
             }
         }
 
-        if (!colliding) {
-            position.x += velocity.x * deltaTime;
-            position.y += velocity.y * deltaTime;
-        }
+        position.x += velocity.x;
+        position.y += velocity.y;
     }
 
-    void Actor::handleCollision(GameObject* obj, float deltaTime) {
-        glm::vec4 broadPhaseBox = Collisions::GetSweptBroadPhaseBox({position, size}, velocity * deltaTime);
+    void Actor::handleCollision(GameObject* obj) {
+        glm::vec4 broadPhaseBox = Collisions::GetSweptBroadPhaseBox({position, size}, velocity);
 
         colliding = false;
         if (Collisions::AABB(broadPhaseBox, {obj->getPos(), obj->getSize()})) {
             colliding = true;
             glm::vec2 normal;
-            float collisionTime = Collisions::SweptAABB({position, size}, velocity * deltaTime, {obj->getPos(), obj->getSize()}, normal);
-            position.x += velocity.x * collisionTime * deltaTime;
-            position.y += velocity.y * collisionTime * deltaTime;
 
-            if (collisionTime < 1) {
+            float contactTime = 0.0f;
+            if (Collisions::SweptAABB({position, size}, velocity, {obj->getPos(), obj->getSize()}, normal, contactTime)) {
                 if (collisionResponseType == CollisionResponseType::STOP) {
-                    velocity.x = 0;
-                    velocity.y = 0;
+                    velocity = {0,0};
+                } else if (collisionResponseType == CollisionResponseType::SLIDE) {
+                    velocity += normal * glm::abs(velocity) * (1 - contactTime);
                 }
-                if (collisionResponseType == CollisionResponseType::SLIDE) {
-                    float remainingTime = 1 - collisionTime;
-                    float dotProd = (velocity.x * normal.y + velocity.y * normal.x) * remainingTime;
-                    velocity.x = dotProd * normal.y;
-                    velocity.y = dotProd * normal.x;
-                }
-                position.x += velocity.x * deltaTime;
-                position.y += velocity.y * deltaTime;
             }
         }
     }

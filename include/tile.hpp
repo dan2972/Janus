@@ -19,11 +19,11 @@ namespace Janus {
             size = {TILE_SIZE, TILE_SIZE};
         }
 
-        void tick(float deltaTIme) override {
+        void tick() override {
 
         }
 
-        void render() override {
+        void render(float dt) override {
             DrawRectangle((int)position.x, (int)position.y, (int)size.x, (int)size.y, GRAY);
         }
     };

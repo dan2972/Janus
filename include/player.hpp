@@ -1,10 +1,10 @@
 #ifndef JANUS_PLAYER_HPP
 #define JANUS_PLAYER_HPP
 
+#include <raylib-cpp.hpp>
+#include <glm/glm.hpp>
 #include "texture_manager.hpp"
 #include "actor.hpp"
-#include <raylib-cpp.hpp>
-#include <iostream>
 
 namespace Janus {
     class Player : public Actor {
@@ -19,14 +19,13 @@ namespace Janus {
             collidesWithActors = true;
         };
 
-        void tick(float deltaTime) override {
-            Actor::tick(deltaTime);
-            timer += deltaTime;
+        void tick() override {
+            Actor::tick();
             if (timer >= 2) {
                 //entityHandler->remove(this);
             }
 
-            float speed = 200;
+            float speed = 6;
 
             if (IsKeyDown(KEY_A)) {
                 velocity.x = -speed;
@@ -42,13 +41,13 @@ namespace Janus {
             } else {
                 velocity.y = 0;
             }
-
         }
 
-        void render() override {
-            //DrawRectangle((int)position.x, (int)position.y, 32, 32, raylib::Color(200,255,200));
+        void render(float dt) override {
+            glm::vec2 renderPos = glm::mix(lastPos, position, dt);
+
             DrawTexturePro(*texture, raylib::Rectangle({0,0}, {(float)texture->width, (float)texture->height}),
-                                    raylib::Rectangle({position.x, position.y}, {size.x, size.y}),
+                                    raylib::Rectangle({renderPos.x, renderPos.y}, {size.x, size.y}),
                                     {0, 0}, 0, WHITE);
         }
     private:
