@@ -77,6 +77,9 @@ namespace Janus {
     }
 
     void EntityHandler::render(float dt) {
+        for (auto & it : tilemap.getChunkMap()) {
+            it.second->render(dt);
+        }
         for (auto & obj : projectileList) {
             obj->render(dt);
         }
@@ -113,5 +116,9 @@ namespace Janus {
             default:
                 return this->actorList;
         }
+    }
+
+    Tilemap &EntityHandler::getTileMap() {
+        return tilemap;
     }
 }

@@ -4,11 +4,12 @@
 #include "game_object.hpp"
 #include "entity_handler.hpp"
 #include "texture_manager.hpp"
+#include "chunk.hpp"
 
 namespace Janus {
     class Actor : public GameObject {
     public:
-        explicit Actor(EntityHandler* entityHandler, float x, float y) : entityHandler{entityHandler} {
+        Actor(float x, float y, EntityHandler* entityHandler) : entityHandler{entityHandler} {
             position.x = x;
             position.y = y;
             size.x = 32;
@@ -18,6 +19,10 @@ namespace Janus {
 
         void tick() override {
             handleMovement();
+            chunkPos = glm::vec2{position.x > 0 ? (int)position.x / (Chunk::CHUNK_SIZE*Tile::TILE_SIZE) :
+                                 (int)(position.x - Chunk::CHUNK_SIZE*Tile::TILE_SIZE)/ (Chunk::CHUNK_SIZE*Tile::TILE_SIZE),
+                                 position.y > 0 ? (int)position.y / (Chunk::CHUNK_SIZE*Tile::TILE_SIZE) :
+                                 (int)(position.y - Chunk::CHUNK_SIZE*Tile::TILE_SIZE)/ (Chunk::CHUNK_SIZE*Tile::TILE_SIZE)};
         }
 
         void render(float dt) override {
@@ -39,6 +44,7 @@ namespace Janus {
         CollisionResponseType collisionResponseType = CollisionResponseType::STOP;
 
         glm::vec2 lastPos{};
+        glm::vec2 chunkPos{};
 
     private:
         void handleMovement();

@@ -9,7 +9,7 @@
 namespace Janus {
     class Player : public Actor {
     public:
-        explicit Player(EntityHandler *entityHandler, float x, float y) : Actor(entityHandler, x, y){
+        Player(float x, float y, EntityHandler *entityHandler) : Actor(x, y, entityHandler){
             size.x = 32;
             size.y = 32;
 
@@ -23,6 +23,10 @@ namespace Janus {
             Actor::tick();
             if (timer >= 2) {
                 //entityHandler->remove(this);
+            }
+
+            if (!entityHandler->getTileMap().chunkExistsAt((int)chunkPos.x, (int)chunkPos.y)) {
+                entityHandler->getTileMap().addChunk(new Chunk((int)chunkPos.x, (int)chunkPos.y));
             }
 
             float speed = 6;

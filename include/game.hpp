@@ -18,7 +18,6 @@ namespace Janus {
     private:
         raylib::Window window{screenWidth, screenHeight, "Janus"};
         EntityHandler entityHandler;
-        Tilemap tilemap;
         Player* player;
 
         void update();

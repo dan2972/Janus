@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include "game_object.hpp"
+#include "tilemap.hpp"
 
 namespace Janus {
     class EntityHandler {
@@ -18,9 +19,12 @@ namespace Janus {
         void render(float dt);
 
         std::vector<GameObject*>& getList(GameObject::Type type);
+        Tilemap& getTileMap();
 
     private:
         void tick();
+
+        Tilemap tilemap;
 
         std::vector<GameObject*> actorList;
         std::vector<GameObject*> projectileList;
