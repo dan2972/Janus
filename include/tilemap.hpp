@@ -3,7 +3,6 @@
 
 #include <unordered_map>
 #include <string>
-#include <iostream>
 #include "tile.hpp"
 #include "chunk.hpp"
 
@@ -29,6 +28,16 @@ namespace Janus {
             getChunk(chunkX, chunkY)->render(dt);
         }
 
+        //renders the chunks around the chunk located at centerX and centerY with a given radius
+        void renderChunkAroundCoord(int centerX, int centerY, int radius, float dt) {
+            for (int i = centerY - radius; i <= centerY + radius; ++i) {
+                for (int j = centerX - radius; j <= centerX + radius; ++j) {
+                    Chunk* chunk = getChunk(j, i);
+                    if (chunk != nullptr) chunk->render(dt);
+                }
+            }
+        }
+
         bool chunkExistsAt(int chunkX, int chunkY) {
             std::string key = std::to_string(chunkX) + "," + std::to_string(chunkY);
             auto it = chunkMap.find(key);
@@ -44,7 +53,6 @@ namespace Janus {
             if (it != chunkMap.end()) {
                 return chunkMap.at(key);
             }
-            std::cerr << "Failed to retrieve chunk at " << chunkX << ", " << chunkY << std::endl;
             return nullptr;
         }
 

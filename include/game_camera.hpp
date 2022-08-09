@@ -9,7 +9,7 @@ namespace Janus {
     class GameCamera {
     public:
         GameCamera() {
-            camera.SetZoom(1);
+            camera.SetZoom(zoomValue);
             camera.SetRotation(0);
             camera.SetOffset({0, 0});
         }
@@ -23,6 +23,15 @@ namespace Janus {
         void update() {
             pos = glm::mix(pos, targetPlayer->getRenderPos(), 0.1f);
             camera.SetTarget({pos.x, pos.y});
+
+            if (IsKeyReleased(KEY_MINUS)) {
+                zoomValue -= 0.1f;
+                camera.SetZoom(zoomValue);
+            }
+            if (IsKeyReleased(KEY_EQUAL)) {
+                zoomValue += 0.1f;
+                camera.SetZoom(zoomValue);
+            }
         }
 
     private:
@@ -31,6 +40,8 @@ namespace Janus {
         glm::vec2 pos{};
 
         Player* targetPlayer = nullptr;
+
+        float zoomValue = 1.0f;
     };
 }
 

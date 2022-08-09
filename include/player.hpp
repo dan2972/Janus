@@ -25,8 +25,12 @@ namespace Janus {
                 //entityHandler->remove(this);
             }
 
-            if (!entityHandler->getTileMap().chunkExistsAt((int)chunkPos.x, (int)chunkPos.y)) {
-                entityHandler->getTileMap().addChunk(new Chunk((int)chunkPos.x, (int)chunkPos.y));
+            for (int i = (int)chunkPos.y - 1; i <= (int)chunkPos.y + 1; ++i) {
+                for (int j = (int)chunkPos.x - 1; j <= (int)chunkPos.x + 1; ++j) {
+                    if (!entityHandler->getTileMap().chunkExistsAt((int) j, (int) i)) {
+                        entityHandler->getTileMap().addChunk(new Chunk((int) j, (int) i));
+                    }
+                }
             }
 
             float speed = 6;

@@ -16,7 +16,7 @@ namespace Janus {
         void remove(GameObject* obj);
 
         void update();
-        void render(float dt);
+        void render(int centerChunkPosX, int centerChunkPosY, float dt);
 
         std::vector<GameObject*>& getList(GameObject::Type type);
         Tilemap& getTileMap();

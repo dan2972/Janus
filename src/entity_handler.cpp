@@ -76,10 +76,8 @@ namespace Janus {
         }
     }
 
-    void EntityHandler::render(float dt) {
-        for (auto & it : tilemap.getChunkMap()) {
-            it.second->render(dt);
-        }
+    void EntityHandler::render(int centerChunkPosX, int centerChunkPosY, float dt) {
+        tilemap.renderChunkAroundCoord(centerChunkPosX, centerChunkPosY, 1, dt);
         for (auto & obj : projectileList) {
             obj->render(dt);
         }

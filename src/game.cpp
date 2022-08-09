@@ -56,7 +56,7 @@ namespace Janus {
             window.ClearBackground(BLACK);
                 camera.start();
 
-                    entityHandler.render(dt);
+                    entityHandler.render(player->getChunkPos().x, player->getChunkPos().y, dt);
 
                 camera.end();
 

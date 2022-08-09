@@ -30,7 +30,8 @@ namespace Janus {
             DrawRectangle((int)position.x, (int)position.y, (int)size.x, (int)size.y, raylib::Color(200,255,200));
         }
 
-        glm::vec2 getRenderPos() { return renderPos; }
+        [[nodiscard]] glm::vec2 getRenderPos() const { return renderPos; }
+        [[nodiscard]] glm::vec2 getChunkPos() const { return chunkPos; }
 
         glm::vec2 velocity{};
 
