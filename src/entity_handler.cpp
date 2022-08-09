@@ -1,4 +1,5 @@
 #include "entity_handler.hpp"
+#include "actor.hpp"
 
 namespace Janus {
     EntityHandler::~EntityHandler() {
@@ -65,6 +66,7 @@ namespace Janus {
     }
 
     void EntityHandler::tick() {
+        tilemap.clearRandomTickList();
         for (auto & obj : projectileList) {
             obj->tick();
         }
@@ -73,7 +75,12 @@ namespace Janus {
         }
         for (auto & obj : actorList) {
             obj->tick();
+            auto actor = (Actor*) obj;
+            if (actor->getActorType() == Actor::ActorType::PLAYER) {
+                tilemap.addChunksToRandomTickList((int)actor->getChunkPos().x, (int)actor->getChunkPos().y, 1);
+            }
         }
+        tilemap.randomTick(1);
     }
 
     void EntityHandler::render(int centerChunkPosX, int centerChunkPosY, float dt) {

@@ -1,6 +1,7 @@
 #ifndef JANUS_ACTOR_HPP
 #define JANUS_ACTOR_HPP
 
+#include <glm/glm.hpp>
 #include "game_object.hpp"
 #include "entity_handler.hpp"
 #include "texture_manager.hpp"
@@ -17,6 +18,11 @@ namespace Janus {
             type = Type::ACTOR;
         }
 
+        enum ActorType {
+            PLAYER,
+            NONE
+        };
+
         void tick() override {
             handleMovement();
             chunkPos = glm::vec2{position.x > 0 ? (int)position.x / (Chunk::CHUNK_SIZE*Tile::TILE_SIZE) :
@@ -32,6 +38,7 @@ namespace Janus {
 
         [[nodiscard]] glm::vec2 getRenderPos() const { return renderPos; }
         [[nodiscard]] glm::vec2 getChunkPos() const { return chunkPos; }
+        [[nodiscard]] ActorType getActorType() const { return actorType; }
 
         glm::vec2 velocity{};
 
@@ -46,6 +53,8 @@ namespace Janus {
             SLIDE
         };
         CollisionResponseType collisionResponseType = CollisionResponseType::STOP;
+
+        ActorType actorType = ActorType::NONE;
 
         glm::vec2 lastPos{};
         glm::vec2 renderPos{};

@@ -20,9 +20,9 @@ namespace Janus {
             NONE
         };
 
-        glm::vec2 getPos() { return position; }
-        glm::vec2 getSize() { return size; }
-        Type getType() { return type; }
+        [[nodiscard]] glm::vec2 getPos() const { return position; }
+        [[nodiscard]] glm::vec2 getSize() const { return size; }
+        [[nodiscard]] Type getType() const { return type; }
 
     protected:
         glm::vec2 position{};

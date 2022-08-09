@@ -22,12 +22,14 @@ namespace Janus {
         }
 
         void tick() override {
-
+            c = GREEN;
         }
 
         void render(float dt) override {
-            DrawRectangle((int)position.x, (int)position.y, (int)size.x, (int)size.y, GRAY);
+            DrawRectangle((int)position.x, (int)position.y, (int)size.x, (int)size.y, c);
         }
+    private:
+        raylib::Color c = GRAY;
     };
 }
 

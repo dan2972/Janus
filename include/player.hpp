@@ -17,6 +17,8 @@ namespace Janus {
 
             collisionResponseType = CollisionResponseType::SLIDE;
             collidesWithActors = true;
+
+            actorType = ActorType::PLAYER;
         };
 
         void tick() override {

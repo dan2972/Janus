@@ -35,7 +35,7 @@ endif()
 
 include_directories(include)
 
-set(SOURCES src/main.cpp include/game_object.hpp include/entity_handler.hpp src/entity_handler.cpp include/player.hpp include/texture_manager.hpp src/texture_manager.cpp include/actor.hpp src/actor.cpp include/physics/collisions.hpp src/physics/collisions.cpp include/tile.hpp include/tilemap.hpp include/chunk.hpp include/game.hpp src/game.cpp include/game_camera.hpp)
+set(SOURCES src/main.cpp include/game_object.hpp include/entity_handler.hpp src/entity_handler.cpp include/player.hpp include/texture_manager.hpp src/texture_manager.cpp include/actor.hpp src/actor.cpp include/physics/collisions.hpp src/physics/collisions.cpp include/tile.hpp include/tilemap.hpp include/chunk.hpp include/game.hpp src/game.cpp include/game_camera.hpp include/random_generator.hpp src/random_generator.cpp src/tilemap.cpp src/chunk.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 target_link_libraries(${PROJECT_NAME} raylib raylib_cpp)

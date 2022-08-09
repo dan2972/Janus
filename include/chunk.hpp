@@ -8,47 +8,16 @@ namespace Janus {
     class Chunk {
     public:
         const static short CHUNK_SIZE = 16;
-        Chunk(int chunkX, int chunkY) : chunkX{chunkX}, chunkY(chunkY){
-            for (unsigned char i = 0; i < CHUNK_SIZE; ++i) {
-                for (unsigned char j = 0; j < CHUNK_SIZE; ++j) {
-                    tileChunk[CHUNK_SIZE*i + j] = new Tile((j+chunkX*CHUNK_SIZE)*Tile::TILE_SIZE, (i+chunkY*CHUNK_SIZE)*Tile::TILE_SIZE);
-                }
-            }
-        }
-        ~Chunk() {
-            for (unsigned char i = 0; i < CHUNK_SIZE; ++i) {
-                for (unsigned char j = 0; j < CHUNK_SIZE; ++j) {
-                    delete tileChunk[CHUNK_SIZE*i + j];
-                }
-            }
-        }
+        Chunk(int chunkX, int chunkY);
+        ~Chunk();
 
-        void tick() {
-            for (unsigned char i = 0; i < CHUNK_SIZE; ++i) {
-                for (unsigned char j = 0; j < CHUNK_SIZE; ++j) {
-                    tileChunk[CHUNK_SIZE*i + j]->tick();
-                }
-            }
-        }
+        void tick();
+        void render(float dt);
 
-        void render(float dt) {
-            for (unsigned char i = 0; i < CHUNK_SIZE; ++i) {
-                for (unsigned char j = 0; j < CHUNK_SIZE; ++j) {
-                    tileChunk[CHUNK_SIZE*i + j]->render(dt);
-                }
-            }
-        }
-
-        Tile* getTileAt(unsigned char row, unsigned char col) {
-            return tileChunk[CHUNK_SIZE*row + col];
-        }
-
-        std::array<Tile*, CHUNK_SIZE*CHUNK_SIZE>& getMap() {
-            return tileChunk;
-        }
+        Tile& getTileAt(unsigned char row, unsigned char col);
+        std::array<Tile*, CHUNK_SIZE*CHUNK_SIZE>& getMap();
 
         [[nodiscard]] int getChunkX() const { return chunkX; }
-
         [[nodiscard]] int getChunkY() const { return chunkY; }
 
     private:

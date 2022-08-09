@@ -1,5 +1,6 @@
 #include "game.hpp"
 #include "texture_manager.hpp"
+#include "random_generator.hpp"
 
 namespace Janus {
     int Game::screenWidth = 800;
@@ -16,6 +17,8 @@ namespace Janus {
         entityHandler.add(new Actor(132, 100, &entityHandler));
 
         camera.setTargetPlayer(player);
+
+        RandomGenerator::setSeed(0);
     }
 
     void Game::run() {
