@@ -11,14 +11,14 @@ namespace Janus {
         Chunk(int chunkX, int chunkY) : chunkX{chunkX}, chunkY(chunkY){
             for (unsigned char i = 0; i < CHUNK_SIZE; ++i) {
                 for (unsigned char j = 0; j < CHUNK_SIZE; ++j) {
-                    tileChunk[i][j] = new Tile((j+chunkX*CHUNK_SIZE)*Tile::TILE_SIZE, (i+chunkY*CHUNK_SIZE)*Tile::TILE_SIZE);
+                    tileChunk[CHUNK_SIZE*i + j] = new Tile((j+chunkX*CHUNK_SIZE)*Tile::TILE_SIZE, (i+chunkY*CHUNK_SIZE)*Tile::TILE_SIZE);
                 }
             }
         }
         ~Chunk() {
             for (unsigned char i = 0; i < CHUNK_SIZE; ++i) {
                 for (unsigned char j = 0; j < CHUNK_SIZE; ++j) {
-                    delete tileChunk[i][j];
+                    delete tileChunk[CHUNK_SIZE*i + j];
                 }
             }
         }
@@ -26,7 +26,7 @@ namespace Janus {
         void tick() {
             for (unsigned char i = 0; i < CHUNK_SIZE; ++i) {
                 for (unsigned char j = 0; j < CHUNK_SIZE; ++j) {
-                    tileChunk[i][j]->tick();
+                    tileChunk[CHUNK_SIZE*i + j]->tick();
                 }
             }
         }
@@ -34,16 +34,16 @@ namespace Janus {
         void render(float dt) {
             for (unsigned char i = 0; i < CHUNK_SIZE; ++i) {
                 for (unsigned char j = 0; j < CHUNK_SIZE; ++j) {
-                    tileChunk[i][j]->render(dt);
+                    tileChunk[CHUNK_SIZE*i + j]->render(dt);
                 }
             }
         }
 
         Tile* getTileAt(unsigned char row, unsigned char col) {
-            return tileChunk[row][col];
+            return tileChunk[CHUNK_SIZE*row + col];
         }
 
-        std::array<std::array<Tile*, CHUNK_SIZE>, CHUNK_SIZE> getMap() {
+        std::array<Tile*, CHUNK_SIZE*CHUNK_SIZE>& getMap() {
             return tileChunk;
         }
 
@@ -52,7 +52,7 @@ namespace Janus {
         [[nodiscard]] int getChunkY() const { return chunkY; }
 
     private:
-        std::array<std::array<Tile*, CHUNK_SIZE>, CHUNK_SIZE> tileChunk{nullptr};
+        std::array<Tile*, CHUNK_SIZE*CHUNK_SIZE> tileChunk{nullptr};
         int chunkX, chunkY;
     };
 }

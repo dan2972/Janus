@@ -7,7 +7,7 @@ namespace Janus {
 
     Game::Game() {
         //SetTargetFPS(60);
-        window.SetState(FLAG_VSYNC_HINT);
+        window.ClearState(FLAG_VSYNC_HINT);
 
         TextureManager::LoadTexture("resources/slime.png");
         player = new Player(10, 10, &entityHandler);
@@ -20,7 +20,7 @@ namespace Janus {
 
     void Game::run() {
         double lastTime = GetTime();
-        double amountOfTicks = 30.0;
+        double amountOfTicks = 40.0;
         double tps = 1.0 / amountOfTicks;
         double delta = 0;
         double timer = GetTime();
