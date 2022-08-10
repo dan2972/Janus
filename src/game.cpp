@@ -57,11 +57,12 @@ namespace Janus {
         window.BeginDrawing();
 
             window.ClearBackground(BLACK);
-                camera.start();
 
-                    entityHandler.render(player->getChunkPos().x, player->getChunkPos().y, dt);
+            camera.start();
 
-                camera.end();
+                entityHandler.render(player->getChunkPos().x, player->getChunkPos().y, dt);
+
+            camera.end();
 
             DrawText(std::string("FPS: " + std::to_string(FPS)).c_str(), 10, 570, 16, WHITE);
 

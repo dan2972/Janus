@@ -33,6 +33,11 @@ namespace Janus {
         }
     }
 
+    void Chunk::replaceTileAt(unsigned char row, unsigned char col, Tile* tile) {
+        delete tileChunk[CHUNK_SIZE*row + col];
+        tileChunk[CHUNK_SIZE*row + col] = tile;
+    }
+
     Tile& Chunk::getTileAt(unsigned char row, unsigned char col) {
         return *tileChunk[CHUNK_SIZE*row + col];
     }
