@@ -34,10 +34,6 @@ namespace Janus {
         getChunk(chunkX, chunkY)->tick();
     }
 
-    void Tilemap::renderChunk(int chunkX, int chunkY, float dt) {
-        getChunk(chunkX, chunkY)->render(dt);
-    }
-
     void Tilemap::clearRandomTickList() {
         randomTickChunks.clear();
     }
@@ -69,15 +65,6 @@ namespace Janus {
 
     void Tilemap::scheduleTileTick(Tile& tile, unsigned int delay) {\
         tileTickScheduleQueue.push({&tile, (int)delay});
-    }
-
-    void Tilemap::renderChunkAroundCoord(int centerX, int centerY, int radius, float dt) {
-        for (int i = centerY - radius; i <= centerY + radius; ++i) {
-            for (int j = centerX - radius; j <= centerX + radius; ++j) {
-                Chunk* chunk = getChunk(j, i);
-                if (chunk != nullptr) chunk->render(dt);
-            }
-        }
     }
 
     bool Tilemap::chunkExistsAt(int chunkX, int chunkY) {

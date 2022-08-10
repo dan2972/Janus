@@ -85,16 +85,8 @@ namespace Janus {
     }
 
     void EntityHandler::render(int centerChunkPosX, int centerChunkPosY, float dt) {
-        tilemap.renderChunkAroundCoord(centerChunkPosX, centerChunkPosY, 1, dt);
-        for (auto & obj : projectileList) {
-            obj->render(dt);
-        }
-        for (auto & obj : particleList) {
-            obj->render(dt);
-        }
-        for (auto & obj : actorList) {
-            obj->render(dt);
-        }
+        entityRenderer.renderTilemap(centerChunkPosX, centerChunkPosY, 1, dt);
+        entityRenderer.renderActors(actorList, dt);
     }
 
     void EntityHandler::removeObjFromList(GameObject* obj, std::vector<GameObject*>& list) {

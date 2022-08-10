@@ -18,8 +18,6 @@ namespace Janus {
 
         void addChunk(Chunk* chunk);
         void tickChunk(int chunkX, int chunkY);
-        void renderChunk(int chunkX, int chunkY, float dt);
-        void renderChunkAroundCoord(int centerX, int centerY, int radius, float dt);
 
         void clearRandomTickList();
         void addChunkToRandomTickList(int chunkX, int chunkY);

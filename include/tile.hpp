@@ -14,28 +14,31 @@ namespace Janus {
             position = {0, 0};
             size = {TILE_SIZE, TILE_SIZE};
             type = Type::TILE;
+            tileType = TileType::NONE;
         }
 
         Tile(float x, float y, Tilemap* tilemap) : tilemap{tilemap} {
             position = {x, y};
             size = {TILE_SIZE, TILE_SIZE};
             type = Type::TILE;
+            tileType = TileType::GRASS;
         }
 
         virtual void scheduledTick() {
 
         }
 
-        void tick() override {
-            c = GREEN;
-        }
+        void tick() override { }
 
-        void render(float dt) override {
-            DrawRectangle((int)position.x, (int)position.y, (int)size.x, (int)size.y, c);
-        }
+        enum TileType {
+            GRASS,
+            NONE
+        };
+
+        TileType getTileType() { return tileType; }
     private:
         Tilemap* tilemap = nullptr;
-        raylib::Color c = GRAY;
+        TileType tileType;
     };
 }
 

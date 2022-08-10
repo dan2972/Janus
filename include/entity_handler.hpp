@@ -6,6 +6,7 @@
 #include <queue>
 #include "game_object.hpp"
 #include "tilemap.hpp"
+#include "entity_renderer.hpp"
 
 namespace Janus {
     class EntityHandler {
@@ -26,6 +27,7 @@ namespace Janus {
         void tick();
 
         Tilemap tilemap;
+        EntityRenderer entityRenderer{&tilemap};
 
         std::vector<GameObject*> actorList;
         std::vector<GameObject*> projectileList;

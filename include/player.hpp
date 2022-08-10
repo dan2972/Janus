@@ -13,8 +13,6 @@ namespace Janus {
             size.x = 32;
             size.y = 32;
 
-            texture = TextureManager::GetTexture("resources/slime.png");
-
             collisionResponseType = CollisionResponseType::SLIDE;
             collidesWithActors = true;
 
@@ -53,16 +51,7 @@ namespace Janus {
             }
         }
 
-        void render(float dt) override {
-            renderPos = glm::mix(lastPos, position, dt);
-
-            DrawTexturePro(*texture, raylib::Rectangle({0,0}, {(float)texture->width, (float)texture->height}),
-                                    raylib::Rectangle({renderPos.x, renderPos.y}, {size.x, size.y}),
-                                    {0, 0}, 0, WHITE);
-        }
     private:
-        raylib::Texture2D* texture = nullptr;
-
         float timer = 0;
     };
 }

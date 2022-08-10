@@ -20,8 +20,8 @@ namespace Janus {
         }
         void start() { camera.BeginMode(); }
         void end() { camera.EndMode(); }
-        void update() {
-            pos = glm::mix(pos, targetPlayer->getRenderPos(), 0.1f);
+        void update(float dt) {
+            pos = glm::mix(targetPlayer->getLastPos(), targetPlayer->getPos(), dt);
             camera.SetTarget({pos.x, pos.y});
 
             if (IsKeyReleased(KEY_MINUS)) {

@@ -52,7 +52,7 @@ namespace Janus {
     }
 
     void Game::render(float dt) {
-        camera.update();
+        camera.update(dt);
 
         window.BeginDrawing();
 

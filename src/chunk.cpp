@@ -33,14 +33,6 @@ namespace Janus {
         }
     }
 
-    void Chunk::render(float dt) {
-        for (unsigned char i = 0; i < CHUNK_SIZE; ++i) {
-            for (unsigned char j = 0; j < CHUNK_SIZE; ++j) {
-                tileChunk[CHUNK_SIZE*i + j]->render(dt);
-            }
-        }
-    }
-
     Tile& Chunk::getTileAt(unsigned char row, unsigned char col) {
         return *tileChunk[CHUNK_SIZE*row + col];
     }

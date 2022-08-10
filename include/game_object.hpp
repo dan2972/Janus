@@ -10,7 +10,6 @@ namespace Janus {
         virtual ~GameObject() = default;
 
         virtual void tick() = 0;
-        virtual void render(float dt) = 0;
 
         enum Type {
             ACTOR,

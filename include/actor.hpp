@@ -31,12 +31,7 @@ namespace Janus {
                                  (int)(position.y - Chunk::CHUNK_SIZE*Tile::TILE_SIZE)/ (Chunk::CHUNK_SIZE*Tile::TILE_SIZE)};
         }
 
-        void render(float dt) override {
-            renderPos = glm::mix(lastPos, position, dt);
-            DrawRectangle((int)position.x, (int)position.y, (int)size.x, (int)size.y, raylib::Color(200,255,200));
-        }
-
-        [[nodiscard]] glm::vec2 getRenderPos() const { return renderPos; }
+        [[nodiscard]] glm::vec2 getLastPos() const { return lastPos; }
         [[nodiscard]] glm::vec2 getChunkPos() const { return chunkPos; }
         [[nodiscard]] ActorType getActorType() const { return actorType; }
 
@@ -57,7 +52,6 @@ namespace Janus {
         ActorType actorType = ActorType::NONE;
 
         glm::vec2 lastPos{};
-        glm::vec2 renderPos{};
         glm::vec2 chunkPos{};
 
     private:
