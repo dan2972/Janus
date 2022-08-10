@@ -15,16 +15,16 @@ namespace Janus {
     }
 
     void EntityHandler::add(GameObject *obj) {
-        toAdd.push_back(obj);
+        toAdd.push(obj);
     }
 
     void EntityHandler::remove(GameObject* obj) {
-        toDelete.push_back(obj);
+        toDelete.push(obj);
     }
 
     void EntityHandler::update() {
-
-        for (auto obj : toDelete) {
+        while (!toDelete.empty()) {
+            auto obj = toDelete.front();
             switch (obj->getType()) {
                 case GameObject::Type::ACTOR:
                     removeObjFromList(obj, actorList);
@@ -39,12 +39,12 @@ namespace Janus {
                     removeObjFromList(obj, actorList);
                     break;
             }
-
             delete obj;
+            toDelete.pop();
         }
-        toDelete.clear();
 
-        for (auto obj : toAdd) {
+        while (!toAdd.empty()) {
+            auto obj = toAdd.front();
             switch (obj->getType()) {
                 case GameObject::Type::ACTOR:
                     addObjToList(obj, actorList);
@@ -59,8 +59,8 @@ namespace Janus {
                     addObjToList(obj, actorList);
                     break;
             }
+            toAdd.pop();
         }
-        toAdd.clear();
 
         tick();
     }
@@ -80,6 +80,7 @@ namespace Janus {
                 tilemap.addChunksToRandomTickList((int)actor->getChunkPos().x, (int)actor->getChunkPos().y, 1);
             }
         }
+        tilemap.tick();
         tilemap.randomTick(1);
     }
 

@@ -4,6 +4,7 @@
 #include <raylib-cpp.hpp>
 #include <random>
 #include "game_object.hpp"
+#include "tilemap.hpp"
 
 namespace Janus {
     class Tile : public GameObject {
@@ -15,10 +16,14 @@ namespace Janus {
             type = Type::TILE;
         }
 
-        Tile(float x, float y) {
+        Tile(float x, float y, Tilemap* tilemap) : tilemap{tilemap} {
             position = {x, y};
             size = {TILE_SIZE, TILE_SIZE};
             type = Type::TILE;
+        }
+
+        virtual void scheduledTick() {
+
         }
 
         void tick() override {
@@ -29,6 +34,7 @@ namespace Janus {
             DrawRectangle((int)position.x, (int)position.y, (int)size.x, (int)size.y, c);
         }
     private:
+        Tilemap* tilemap = nullptr;
         raylib::Color c = GRAY;
     };
 }

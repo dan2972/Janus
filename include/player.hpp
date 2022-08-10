@@ -30,7 +30,7 @@ namespace Janus {
             for (int i = (int)chunkPos.y - 1; i <= (int)chunkPos.y + 1; ++i) {
                 for (int j = (int)chunkPos.x - 1; j <= (int)chunkPos.x + 1; ++j) {
                     if (!entityHandler->getTileMap().chunkExistsAt((int) j, (int) i)) {
-                        entityHandler->getTileMap().addChunk(new Chunk((int) j, (int) i));
+                        entityHandler->getTileMap().addChunk(new Chunk((int) j, (int) i, &entityHandler->getTileMap()));
                     }
                 }
             }

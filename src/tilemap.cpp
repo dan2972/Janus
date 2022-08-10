@@ -1,10 +1,28 @@
 #include "tilemap.hpp"
+#include "chunk.hpp"
 
 namespace Janus {
 
     Tilemap::~Tilemap() {
         for (auto& it : chunkMap) {
             delete it.second;
+        }
+    }
+
+    void Tilemap::tick() {
+        while(!tileTickScheduleQueue.empty()) {
+            tileTickSchedule.push_back(tileTickScheduleQueue.front());
+            tileTickScheduleQueue.pop();
+        }
+        auto it = tileTickSchedule.begin();
+        while (it != tileTickSchedule.end()) {
+            if (it->ticksLeft == 0) {
+                it->tile->scheduledTick();
+                it = tileTickSchedule.erase(it);
+            } else {
+                --it->ticksLeft;
+                ++it;
+            }
         }
     }
 
@@ -44,15 +62,13 @@ namespace Janus {
 
     void Tilemap::randomTick(unsigned short randomTickRate) {
         for (const std::string& key : randomTickChunks) {
-            for (unsigned short k = 0; k < randomTickRate; ++k) {
-                Chunk *chunk = getChunk(key);
-                if (chunk != nullptr) {
-                    int row = RandomGenerator::randInt(0, Chunk::CHUNK_SIZE - 1);
-                    int col = RandomGenerator::randInt(0, Chunk::CHUNK_SIZE - 1);
-                    chunk->getTileAt(row, col).tick();
-                }
-            }
+            Chunk *chunk = getChunk(key);
+            if (chunk != nullptr) chunk->randomTick(randomTickRate);
         }
+    }
+
+    void Tilemap::scheduleTileTick(Tile& tile, unsigned int delay) {\
+        tileTickScheduleQueue.push({&tile, (int)delay});
     }
 
     void Tilemap::renderChunkAroundCoord(int centerX, int centerY, int radius, float dt) {

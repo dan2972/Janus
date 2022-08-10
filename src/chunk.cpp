@@ -1,10 +1,11 @@
 #include "chunk.hpp"
+#include "random_generator.hpp"
 
 namespace Janus {
-    Chunk::Chunk(int chunkX, int chunkY) : chunkX{chunkX}, chunkY(chunkY){
+    Chunk::Chunk(int chunkX, int chunkY, Tilemap* tilemap) : chunkX{chunkX}, chunkY(chunkY){
         for (unsigned char i = 0; i < CHUNK_SIZE; ++i) {
             for (unsigned char j = 0; j < CHUNK_SIZE; ++j) {
-                tileChunk[CHUNK_SIZE*i + j] = new Tile((j+chunkX*CHUNK_SIZE)*Tile::TILE_SIZE, (i+chunkY*CHUNK_SIZE)*Tile::TILE_SIZE);
+                tileChunk[CHUNK_SIZE*i + j] = new Tile((j+chunkX*CHUNK_SIZE)*Tile::TILE_SIZE, (i+chunkY*CHUNK_SIZE)*Tile::TILE_SIZE, tilemap);
             }
         }
     }
@@ -21,6 +22,14 @@ namespace Janus {
             for (unsigned char j = 0; j < CHUNK_SIZE; ++j) {
                 tileChunk[CHUNK_SIZE*i + j]->tick();
             }
+        }
+    }
+
+    void Chunk::randomTick(unsigned short randomTickRate) {
+        for (unsigned short k = 0; k < randomTickRate; ++k) {
+            int row = RandomGenerator::randInt(0, Chunk::CHUNK_SIZE - 1);
+            int col = RandomGenerator::randInt(0, Chunk::CHUNK_SIZE - 1);
+            tileChunk[CHUNK_SIZE*row + col]->tick();
         }
     }
 

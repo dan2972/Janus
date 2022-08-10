@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <unordered_map>
+#include <queue>
 #include "game_object.hpp"
 #include "tilemap.hpp"
 
@@ -30,8 +31,8 @@ namespace Janus {
         std::vector<GameObject*> projectileList;
         std::vector<GameObject*> particleList;
         std::unordered_map<GameObject*, unsigned int> objIndexMap;
-        std::vector<GameObject*> toDelete;
-        std::vector<GameObject*> toAdd;
+        std::queue<GameObject*> toDelete;
+        std::queue<GameObject*> toAdd;
 
         void removeObjFromList(GameObject* obj, std::vector<GameObject*>& list);
         void addObjToList(GameObject* obj, std::vector<GameObject*>& list);

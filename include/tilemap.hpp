@@ -3,15 +3,18 @@
 
 #include <unordered_map>
 #include <string>
-#include "tile.hpp"
-#include "chunk.hpp"
-#include "random_generator.hpp"
+#include <vector>
+#include <queue>
 
 namespace Janus {
+    class Tile;
+    class Chunk;
     class Tilemap {
     public:
         Tilemap() = default;
         ~Tilemap();
+
+        void tick();
 
         void addChunk(Chunk* chunk);
         void tickChunk(int chunkX, int chunkY);
@@ -22,6 +25,8 @@ namespace Janus {
         void addChunkToRandomTickList(int chunkX, int chunkY);
         void addChunksToRandomTickList(int centerX, int centerY, int radius);
         void randomTick(unsigned short randomTickRate);
+
+        void scheduleTileTick(Tile& tile, unsigned int delay);
 
         bool chunkExistsAt(int chunkX, int chunkY);
         Chunk* getChunk(int chunkX, int chunkY);
@@ -34,6 +39,12 @@ namespace Janus {
     private:
         std::unordered_map<std::string, Chunk*> chunkMap;
         std::vector<std::string> randomTickChunks;
+        struct tileTickSchedulePair {
+            Tile* tile;
+            int ticksLeft;
+        };
+        std::vector<tileTickSchedulePair> tileTickSchedule;
+        std::queue<tileTickSchedulePair> tileTickScheduleQueue;
     };
 }
 

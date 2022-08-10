@@ -3,15 +3,17 @@
 
 #include <array>
 #include "tile.hpp"
+#include "tilemap.hpp"
 
 namespace Janus {
     class Chunk {
     public:
         const static short CHUNK_SIZE = 16;
-        Chunk(int chunkX, int chunkY);
+        Chunk(int chunkX, int chunkY, Tilemap* tilemap);
         ~Chunk();
 
         void tick();
+        void randomTick(unsigned short randomTickRate);
         void render(float dt);
 
         Tile& getTileAt(unsigned char row, unsigned char col);
