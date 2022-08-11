@@ -9,7 +9,7 @@ namespace Janus {
     public:
         explicit EntityRenderer(Tilemap* tilemap) : tilemap{tilemap} {}
 
-        void renderActors(const std::vector<GameObject*>& actorList, float dt);
+        void renderActors(const std::vector<std::unique_ptr<GameObject>>& actorList, float dt);
         void renderTilemap(int centerX, int centerY, int radius, float dt);
         void renderProjectiles();
         void renderParticles();

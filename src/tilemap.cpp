@@ -3,13 +3,6 @@
 #include "tile_math_helper.hpp"
 
 namespace Janus {
-
-    Tilemap::~Tilemap() {
-        for (auto& it : chunkMap) {
-            delete it.second;
-        }
-    }
-
     void Tilemap::tick() {
         while(!tileTickScheduleQueue.empty()) {
             tileTickSchedule.push_back(tileTickScheduleQueue.front());
@@ -17,18 +10,18 @@ namespace Janus {
         }
         auto it = tileTickSchedule.begin();
         while (it != tileTickSchedule.end()) {
-            if (it->ticksLeft == 0) {
-                it->tile->scheduledTick();
+            if (it->second == 0) {
+                it->first.get().scheduledTick();
                 it = tileTickSchedule.erase(it);
             } else {
-                --it->ticksLeft;
+                --it->second;
                 ++it;
             }
         }
     }
 
     void Tilemap::addChunk(Chunk* chunk) {
-        chunkMap.insert({std::to_string(chunk->getChunkX()) + "," + std::to_string(chunk->getChunkY()), chunk});
+        chunkMap.insert({std::to_string(chunk->getChunkX()) + "," + std::to_string(chunk->getChunkY()), std::unique_ptr<Chunk>(chunk)});
     }
 
     void Tilemap::tickChunk(int chunkX, int chunkY) {
@@ -65,7 +58,7 @@ namespace Janus {
     }
 
     void Tilemap::scheduleTileTick(Tile& tile, unsigned int delay) {
-        tileTickScheduleQueue.push({&tile, (int)delay});
+        tileTickScheduleQueue.push({std::ref(tile), (int)delay});
     }
 
     bool Tilemap::chunkExistsAt(int chunkX, int chunkY) {
@@ -81,7 +74,7 @@ namespace Janus {
         std::string key = std::to_string(chunkX) + "," + std::to_string(chunkY);
         auto it = chunkMap.find(key);
         if (it != chunkMap.end()) {
-            return chunkMap.at(key);
+            return chunkMap.at(key).get();
         }
         return nullptr;
     }
@@ -89,7 +82,7 @@ namespace Janus {
     Chunk* Tilemap::getChunk(const std::string& key) {
         auto it = chunkMap.find(key);
         if (it != chunkMap.end()) {
-            return chunkMap.at(key);
+            return chunkMap.at(key).get();
         }
         return nullptr;
     }
@@ -98,14 +91,13 @@ namespace Janus {
         auto [chunkX, chunkY, localX, localY] = TileMathHelper::tileCoordToChunkAndLocalChunkCoord(x, y);
         Chunk* chunk = getChunk(chunkX, chunkY);
         if (chunk != nullptr) {
-            removeTileFromSchedule(&chunk->getTileAt(localY, localX));
-            delete chunk->getMap()[Chunk::CHUNK_SIZE*localY + localX];
-            chunk->getMap()[Chunk::CHUNK_SIZE*localY + localX] = tile;
+            removeTileFromSchedule(chunk->getTileAt(localY, localX));
+            chunk->getMap()[Chunk::CHUNK_SIZE*localY + localX].reset(tile);
         }
     }
 
-    std::vector<Tile*> Tilemap::getTilesInRange(int x1, int y1, int x2, int y2) {
-        std::vector<Tile*> output;
+    std::vector<std::reference_wrapper<Tile>> Tilemap::getTilesInRange(int x1, int y1, int x2, int y2) {
+        std::vector<std::reference_wrapper<Tile>> output;
         for (int i = y1; i <= y2; ++i) {
             for (int j = x1; j <= x2; ++j) {
                 int chunkX = j >= 0 ? j / Chunk::CHUNK_SIZE : (j - Chunk::CHUNK_SIZE+1) / Chunk::CHUNK_SIZE;
@@ -114,25 +106,25 @@ namespace Janus {
                 if (chunk != nullptr) {
                     int tileX = j - chunkX*Chunk::CHUNK_SIZE;
                     int tileY = i - chunkY*Chunk::CHUNK_SIZE;
-                    output.push_back(&chunk->getTileAt(tileY, tileX));
+                    output.emplace_back(chunk->getTileAt(tileY, tileX));
                 }
             }
         }
         return output;
     }
 
-    std::unordered_map<std::string, Chunk*>& Tilemap::getChunkMap(){
+    std::unordered_map<std::string, std::unique_ptr<Chunk>>& Tilemap::getChunkMap(){
         return chunkMap;
     }
 
-    void Tilemap::removeTileFromSchedule(Tile *tile) {
+    void Tilemap::removeTileFromSchedule(Tile& tile) {
         while(!tileTickScheduleQueue.empty()) {
             tileTickSchedule.push_back(tileTickScheduleQueue.front());
             tileTickScheduleQueue.pop();
         }
         auto it = tileTickSchedule.begin();
         while (it != tileTickSchedule.end()) {
-            if (it->tile == tile) {
+            if (&(it->first.get()) == &tile) {
                 it = tileTickSchedule.erase(it);
             } else {
                 ++it;

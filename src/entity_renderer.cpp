@@ -3,10 +3,10 @@
 #include "actor.hpp"
 
 namespace Janus {
-    void EntityRenderer::renderActors(const std::vector<GameObject*>& actorList, float dt) {
+    void EntityRenderer::renderActors(const std::vector<std::unique_ptr<GameObject>>& actorList, float dt) {
         raylib::Texture* texture;
         for (auto& obj : actorList) {
-            auto* actor = (Actor*)obj;
+            auto actor = (Actor*)obj.get();
             glm::vec2 renderPos = glm::mix(actor->getLastPos(), actor->getPos(), dt);
             switch (actor->getActorType()) {
                 case Actor::ActorType::PLAYER:
@@ -27,7 +27,7 @@ namespace Janus {
             for (int j = centerX - radius; j <= centerX + radius; ++j) {
                 Chunk* chunk = tilemap->getChunk(j, i);
                 if (chunk != nullptr) {
-                    for (auto tile : chunk->getMap()) {
+                    for (auto& tile : chunk->getMap()) {
                         switch (tile->getTileType()) {
                             case Tile::TileType::GROUND:
                                 DrawRectangle(tile->getPos().x, tile->getPos().y, tile->TILE_SIZE, tile->TILE_SIZE, GRAY);

@@ -12,15 +12,14 @@ namespace Janus {
     class EntityHandler {
     public:
         EntityHandler() = default;
-        ~EntityHandler();
 
         void add(GameObject* obj);
-        void remove(GameObject* obj);
+        void remove(GameObject& obj);
 
         void update();
         void render(int centerChunkPosX, int centerChunkPosY, float dt);
 
-        std::vector<GameObject*>& getList(GameObject::Type type);
+        std::vector<std::unique_ptr<GameObject>>& getList(GameObject::Type type);
         Tilemap& getTileMap();
 
     private:
@@ -29,15 +28,15 @@ namespace Janus {
         Tilemap tilemap;
         EntityRenderer entityRenderer{&tilemap};
 
-        std::vector<GameObject*> actorList;
-        std::vector<GameObject*> projectileList;
-        std::vector<GameObject*> particleList;
+        std::vector<std::unique_ptr<GameObject>> actorList;
+        std::vector<std::unique_ptr<GameObject>> projectileList;
+        std::vector<std::unique_ptr<GameObject>> particleList;
         std::unordered_map<GameObject*, unsigned int> objIndexMap;
-        std::queue<GameObject*> toDelete;
-        std::queue<GameObject*> toAdd;
+        std::queue<std::reference_wrapper<GameObject>> toDelete;
+        std::queue<std::unique_ptr<GameObject>> toAdd;
 
-        void removeObjFromList(GameObject* obj, std::vector<GameObject*>& list);
-        void addObjToList(GameObject* obj, std::vector<GameObject*>& list);
+        void removeObjFromList(GameObject& obj, std::vector<std::unique_ptr<GameObject>>& list);
+        void addObjToList(std::unique_ptr<GameObject> obj, std::vector<std::unique_ptr<GameObject>>& list);
     };
 }
 

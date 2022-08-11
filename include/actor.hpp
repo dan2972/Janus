@@ -41,7 +41,6 @@ namespace Janus {
 
     protected:
         EntityHandler* entityHandler = nullptr;
-        raylib::Texture2D* texture = nullptr;
 
         bool collidesWithActors = false;
         bool collidesWithTiles = false;
@@ -60,7 +59,7 @@ namespace Janus {
 
     private:
         void handleMovement();
-        void handleCollision(GameObject* obj);
+        void handleCollision(GameObject& obj);
     };
 }
 

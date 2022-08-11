@@ -2,30 +2,18 @@
 #include "actor.hpp"
 
 namespace Janus {
-    EntityHandler::~EntityHandler() {
-        for (auto obj : actorList) {
-            delete obj;
-        }
-        for (auto obj : projectileList) {
-            delete obj;
-        }
-        for (auto obj : particleList) {
-            delete obj;
-        }
+    void EntityHandler::add(GameObject* obj) {
+        toAdd.push(std::unique_ptr<GameObject>(obj));
     }
 
-    void EntityHandler::add(GameObject *obj) {
-        toAdd.push(obj);
-    }
-
-    void EntityHandler::remove(GameObject* obj) {
-        toDelete.push(obj);
+    void EntityHandler::remove(GameObject& obj) {
+        toDelete.push(std::ref(obj));
     }
 
     void EntityHandler::update() {
         while (!toDelete.empty()) {
             auto obj = toDelete.front();
-            switch (obj->getType()) {
+            switch (obj.get().getType()) {
                 case GameObject::Type::ACTOR:
                     removeObjFromList(obj, actorList);
                     break;
@@ -39,24 +27,23 @@ namespace Janus {
                     removeObjFromList(obj, actorList);
                     break;
             }
-            delete obj;
             toDelete.pop();
         }
 
         while (!toAdd.empty()) {
-            auto obj = toAdd.front();
+            auto& obj = toAdd.front();
             switch (obj->getType()) {
                 case GameObject::Type::ACTOR:
-                    addObjToList(obj, actorList);
+                    addObjToList(std::move(obj), actorList);
                     break;
                 case GameObject::Type::PROJECTILE:
-                    addObjToList(obj, projectileList);
+                    addObjToList(std::move(obj), projectileList);
                     break;
                 case GameObject::Type::PARTICLE:
-                    addObjToList(obj, particleList);
+                    addObjToList(std::move(obj), particleList);
                     break;
                 default:
-                    addObjToList(obj, actorList);
+                    addObjToList(std::move(obj), actorList);
                     break;
             }
             toAdd.pop();
@@ -75,9 +62,9 @@ namespace Janus {
         }
         for (auto & obj : actorList) {
             obj->tick();
-            auto actor = (Actor*) obj;
-            if (actor->getActorType() == Actor::ActorType::PLAYER) {
-                tilemap.addChunksToRandomTickList((int)actor->getChunkPos().x, (int)actor->getChunkPos().y, 1);
+            auto& actor = (Actor&) obj;
+            if (actor.getActorType() == Actor::ActorType::PLAYER) {
+                tilemap.addChunksToRandomTickList((int)actor.getChunkPos().x, (int)actor.getChunkPos().y, 1);
             }
         }
         tilemap.tick();
@@ -89,21 +76,21 @@ namespace Janus {
         entityRenderer.renderActors(actorList, dt);
     }
 
-    void EntityHandler::removeObjFromList(GameObject* obj, std::vector<GameObject*>& list) {
-        if (obj != list.back()) {
-            objIndexMap.at(list.back()) = objIndexMap.at(obj);
-            std::swap(list[objIndexMap.at(obj)], list.back());
+    void EntityHandler::removeObjFromList(GameObject& obj, std::vector<std::unique_ptr<GameObject>>& list) {
+        if (&obj != list.back().get()) {
+            objIndexMap.at(list.back().get()) = objIndexMap.at(&obj);
+            std::swap(list[objIndexMap.at(&obj)], list.back());
         }
         list.pop_back();
-        objIndexMap.erase(obj);
+        objIndexMap.erase(&obj);
     }
 
-    void EntityHandler::addObjToList(GameObject* obj, std::vector<GameObject*>& list) {
-        objIndexMap.insert({obj, list.size()});
-        list.push_back(obj);
+    void EntityHandler::addObjToList(std::unique_ptr<GameObject> obj, std::vector<std::unique_ptr<GameObject>>& list) {
+        objIndexMap.insert({obj.get(), list.size()});
+        list.push_back(std::move(obj));
     }
 
-    std::vector<GameObject*>& EntityHandler::getList(GameObject::Type type) {
+    std::vector<std::unique_ptr<GameObject>>& EntityHandler::getList(GameObject::Type type) {
         switch (type) {
             case GameObject::Type::ACTOR:
                 return this->actorList;

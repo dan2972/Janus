@@ -6,14 +6,12 @@ namespace Janus {
     Chunk::Chunk(int chunkX, int chunkY, Tilemap* tilemap) : chunkX{chunkX}, chunkY(chunkY){
         for (unsigned char i = 0; i < CHUNK_SIZE; ++i) {
             for (unsigned char j = 0; j < CHUNK_SIZE; ++j) {
-                tileChunk[CHUNK_SIZE*i + j] = new GroundTile((j+chunkX*CHUNK_SIZE)*Tile::TILE_SIZE, (i+chunkY*CHUNK_SIZE)*Tile::TILE_SIZE, tilemap);
-            }
-        }
-    }
-    Chunk::~Chunk() {
-        for (unsigned char i = 0; i < CHUNK_SIZE; ++i) {
-            for (unsigned char j = 0; j < CHUNK_SIZE; ++j) {
-                delete tileChunk[CHUNK_SIZE*i + j];
+                tileChunk[CHUNK_SIZE*i + j] = std::unique_ptr<Tile>(
+                        new GroundTile(
+                                (float)(j+chunkX*CHUNK_SIZE)*Tile::TILE_SIZE,
+                                (float)(i+chunkY*CHUNK_SIZE)*Tile::TILE_SIZE,
+                                tilemap)
+                                );
             }
         }
     }
@@ -38,7 +36,7 @@ namespace Janus {
         return *tileChunk[CHUNK_SIZE*row + col];
     }
 
-    std::array<Tile*, Chunk::CHUNK_SIZE*Chunk::CHUNK_SIZE>& Chunk::getMap() {
+    std::array<std::unique_ptr<Tile>, Chunk::CHUNK_SIZE*Chunk::CHUNK_SIZE>& Chunk::getMap() {
         return tileChunk;
     }
 }
