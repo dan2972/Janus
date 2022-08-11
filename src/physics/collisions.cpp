@@ -43,17 +43,19 @@ namespace Janus {
 
         if (tHitFar < 0) return false;
 
-        if (t_near.x > t_near.y)
+        if (t_near.x > t_near.y) {
             if (invDir.x < 0)
                 normal = {1, 0};
             else
                 normal = {-1, 0};
-        else
-            if (invDir.y < 0)
+        } else {
+            if (invDir.y < 0) {
                 normal = {0, 1};
-            else
+                if (t_near.x == t_near.y)
+                    normal = {0, 0};
+            } else
                 normal = {0, -1};
-
+        }
         return true;
     }
 
