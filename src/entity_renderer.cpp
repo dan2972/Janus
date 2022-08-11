@@ -29,8 +29,11 @@ namespace Janus {
                 if (chunk != nullptr) {
                     for (auto tile : chunk->getMap()) {
                         switch (tile->getTileType()) {
-                            case Tile::TileType::GRASS:
+                            case Tile::TileType::GROUND:
                                 DrawRectangle(tile->getPos().x, tile->getPos().y, tile->TILE_SIZE, tile->TILE_SIZE, GRAY);
+                                break;
+                            case Tile::TileType::OBJECT:
+                                DrawRectangle(tile->getPos().x, tile->getPos().y, tile->TILE_SIZE, tile->TILE_SIZE, DARKGRAY);
                                 break;
                             default:
                                 DrawRectangle(tile->getPos().x, tile->getPos().y, tile->TILE_SIZE, tile->TILE_SIZE, WHITE);

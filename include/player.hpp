@@ -9,15 +9,16 @@
 namespace Janus {
     class Player : public Actor {
     public:
-        Player(float x, float y, EntityHandler *entityHandler) : Actor(x, y, entityHandler){
+        Player(float x, float y, EntityHandler* entityHandler) : Actor(x, y, entityHandler) {
             size.x = 32;
             size.y = 32;
 
             collisionResponseType = CollisionResponseType::SLIDE;
             collidesWithActors = true;
+            collidesWithTiles = true;
 
             actorType = ActorType::PLAYER;
-        };
+        }
 
         void tick() override {
             Actor::tick();

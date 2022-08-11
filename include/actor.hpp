@@ -44,6 +44,7 @@ namespace Janus {
         raylib::Texture2D* texture = nullptr;
 
         bool collidesWithActors = false;
+        bool collidesWithTiles = false;
         bool colliding = false;
         enum CollisionResponseType {
             STOP,

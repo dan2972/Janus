@@ -1,6 +1,7 @@
 #include <glm/glm.hpp>
 #include "actor.hpp"
 #include "physics/collisions.hpp"
+#include "tile_math_helper.hpp"
 
 namespace Janus {
     void Actor::handleMovement() {
@@ -10,6 +11,15 @@ namespace Janus {
                 if (obj != this) {
                     handleCollision(obj);
                 }
+            }
+        }
+
+        if (collidesWithTiles) {
+            auto [checkPosX, checkPosY] = TileMathHelper::tileCoordToInt(tilePos.x, tilePos.y);
+            auto tiles = entityHandler->getTileMap().getTilesInRange(checkPosX - 2, checkPosY - 2, checkPosX + 2, checkPosY + 2);
+            for (auto tile : tiles) {
+                if (tile != nullptr && tile->getTileType() == Tile::TileType::OBJECT)
+                    handleCollision(tile);
             }
         }
 

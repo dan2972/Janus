@@ -21,7 +21,7 @@ namespace Janus {
             position = {x, y};
             size = {TILE_SIZE, TILE_SIZE};
             type = Type::TILE;
-            tileType = TileType::GRASS;
+            tileType = TileType::NONE;
         }
 
         virtual void scheduledTick() {
@@ -31,12 +31,13 @@ namespace Janus {
         void tick() override { }
 
         enum TileType {
-            GRASS,
+            GROUND,
+            OBJECT,
             NONE
         };
 
         TileType getTileType() { return tileType; }
-    private:
+    protected:
         Tilemap* tilemap = nullptr;
         TileType tileType;
     };

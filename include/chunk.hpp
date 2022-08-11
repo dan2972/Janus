@@ -15,7 +15,6 @@ namespace Janus {
         void tick();
         void randomTick(unsigned short randomTickRate);
 
-        void replaceTileAt(unsigned char row, unsigned char col, Tile* tile);
         Tile& getTileAt(unsigned char row, unsigned char col);
         std::array<Tile*, CHUNK_SIZE*CHUNK_SIZE>& getMap();
 
