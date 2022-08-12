@@ -1,6 +1,7 @@
 #include "game.hpp"
 #include "texture_manager.hpp"
 #include "random_generator.hpp"
+#include "noise/perlin_generator.hpp"
 
 namespace Janus {
     int Game::screenWidth = 800;
@@ -13,12 +14,11 @@ namespace Janus {
         TextureManager::LoadTexture("resources/slime.png");
         player = new Player(10, 10, &entityHandler);
         entityHandler.add(player);
-        entityHandler.add(new Actor(100, 100, &entityHandler));
-        entityHandler.add(new Actor(132, 100, &entityHandler));
 
         camera.setTargetPlayer(player);
 
-        RandomGenerator::setSeed(0);
+        RandomGenerator::setSeed(1);
+        PerlinGenerator::initialize(1);
     }
 
     void Game::run() {

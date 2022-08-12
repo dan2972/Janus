@@ -10,7 +10,8 @@ namespace Janus {
                              (int)(position.x - Chunk::CHUNK_SIZE*Tile::TILE_SIZE)/ (Chunk::CHUNK_SIZE*Tile::TILE_SIZE),
                              position.y > 0 ? (int)position.y / (Chunk::CHUNK_SIZE*Tile::TILE_SIZE) :
                              (int)(position.y - Chunk::CHUNK_SIZE*Tile::TILE_SIZE)/ (Chunk::CHUNK_SIZE*Tile::TILE_SIZE)};
-        tilePos = {position.x / Tile::TILE_SIZE, position.y / Tile::TILE_SIZE};
+        tilePos = {(position.x + size.x / 2) / Tile::TILE_SIZE,
+                   (position.y + size.x / 2) / Tile::TILE_SIZE};
     }
 
     void Actor::handleMovement() {

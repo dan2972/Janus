@@ -1,17 +1,50 @@
 #include "chunk.hpp"
 #include "random_generator.hpp"
 #include "ground_tile.hpp"
+#include "object_tile.hpp"
+#include "noise/perlin_generator.hpp"
 
 namespace Janus {
     Chunk::Chunk(int chunkX, int chunkY, Tilemap* tilemap) : chunkX{chunkX}, chunkY(chunkY){
         for (unsigned char i = 0; i < CHUNK_SIZE; ++i) {
             for (unsigned char j = 0; j < CHUNK_SIZE; ++j) {
-                tileChunk[CHUNK_SIZE*i + j] = std::unique_ptr<Tile>(
-                        new GroundTile(
-                                (float)(j+chunkX*CHUNK_SIZE)*Tile::TILE_SIZE,
-                                (float)(i+chunkY*CHUNK_SIZE)*Tile::TILE_SIZE,
-                                tilemap)
-                                );
+                float p = 1.0f-PerlinGenerator::getValueAt(chunkX * CHUNK_SIZE + j, chunkY * CHUNK_SIZE+i, 0.03);
+                if (p <= 0.15f) {
+                    tileChunk[CHUNK_SIZE * i + j] = std::unique_ptr<Tile>(
+                            new GroundTile(
+                                    (float) (j + chunkX * CHUNK_SIZE) * Tile::TILE_SIZE,
+                                    (float) (i + chunkY * CHUNK_SIZE) * Tile::TILE_SIZE,
+                                    GroundTile::GroundTileType::WATER, tilemap)
+                    );
+                } else if (p <= 0.2f) {
+                    tileChunk[CHUNK_SIZE * i + j] = std::unique_ptr<Tile>(
+                            new GroundTile(
+                                    (float) (j + chunkX * CHUNK_SIZE) * Tile::TILE_SIZE,
+                                    (float) (i + chunkY * CHUNK_SIZE) * Tile::TILE_SIZE,
+                                    GroundTile::GroundTileType::SAND, tilemap)
+                    );
+                } else if (p <= 0.6f) {
+                    tileChunk[CHUNK_SIZE * i + j] = std::unique_ptr<Tile>(
+                            new GroundTile(
+                                    (float) (j + chunkX * CHUNK_SIZE) * Tile::TILE_SIZE,
+                                    (float) (i + chunkY * CHUNK_SIZE) * Tile::TILE_SIZE,
+                                    tilemap)
+                    );
+                } else if (p <= 0.63f) {
+                    tileChunk[CHUNK_SIZE * i + j] = std::unique_ptr<Tile>(
+                            new GroundTile(
+                                    (float) (j + chunkX * CHUNK_SIZE) * Tile::TILE_SIZE,
+                                    (float) (i + chunkY * CHUNK_SIZE) * Tile::TILE_SIZE,
+                                    GroundTile::GroundTileType::STONE, tilemap)
+                    );
+                } else {
+                    tileChunk[CHUNK_SIZE * i + j] = std::unique_ptr<Tile>(
+                            new ObjectTile(
+                                    (float) (j + chunkX * CHUNK_SIZE) * Tile::TILE_SIZE,
+                                    (float) (i + chunkY * CHUNK_SIZE) * Tile::TILE_SIZE,
+                                    tilemap)
+                    );
+                }
             }
         }
     }

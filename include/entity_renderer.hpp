@@ -14,6 +14,8 @@ namespace Janus {
         void renderProjectiles();
         void renderParticles();
     private:
+        void drawTile(Tile& tile);
+
         Tilemap* tilemap = nullptr;
     };
 }

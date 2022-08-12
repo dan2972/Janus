@@ -1,5 +1,6 @@
 #include "entity_handler.hpp"
 #include "actor.hpp"
+#include "global_values.hpp"
 
 namespace Janus {
     void EntityHandler::add(GameObject* obj) {
@@ -72,7 +73,7 @@ namespace Janus {
     }
 
     void EntityHandler::render(int centerChunkPosX, int centerChunkPosY, float dt) {
-        entityRenderer.renderTilemap(centerChunkPosX, centerChunkPosY, 1, dt);
+        entityRenderer.renderTilemap(centerChunkPosX, centerChunkPosY, CHUNK_RENDER_DISTANCE, dt);
         entityRenderer.renderActors(actorList, dt);
     }
 

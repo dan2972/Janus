@@ -6,15 +6,32 @@
 namespace Janus {
     class GroundTile : public Tile{
     public:
-        GroundTile(float x, float y, Tilemap* tilemap) : Tile(x, y, tilemap) {
+        enum GroundTileType {
+            GRASS,
+            SAND,
+            WATER,
+            STONE,
+            DIRT
+        };
+
+        GroundTile(float x, float y, Tilemap* tilemap)
+            : Tile(x, y, tilemap) {
             tileType = TileType::GROUND;
             groundTileType = GroundTileType::GRASS;
         }
 
-        enum GroundTileType {
-            GRASS,
-            DIRT
-        };
+        GroundTile(float x, float y, GroundTileType type, Tilemap* tilemap)
+            : Tile(x, y, tilemap), groundTileType{type}{
+            tileType = TileType::GROUND;
+        }
+
+        GroundTileType getGroundTileType() {
+            return groundTileType;
+        }
+
+        void setType(GroundTileType type) {
+            groundTileType = type;
+        }
     private:
         GroundTileType groundTileType;
     };

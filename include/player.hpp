@@ -7,7 +7,8 @@
 #include "actor.hpp"
 #include "tile_math_helper.hpp"
 #include "object_tile.hpp"
-#include <iostream>
+#include "global_values.hpp"
+#include "ground_tile.hpp"
 
 namespace Janus {
     class Player : public Actor {
@@ -29,27 +30,37 @@ namespace Janus {
                 //entityHandler->remove(this);
             }
 
-            for (int i = (int)chunkPos.y - 1; i <= (int)chunkPos.y + 1; ++i) {
-                for (int j = (int)chunkPos.x - 1; j <= (int)chunkPos.x + 1; ++j) {
+            int chunkLoadRadius = CHUNK_LOAD_DISTANCE;
+            for (int i = (int)chunkPos.y - chunkLoadRadius; i <= (int)chunkPos.y + chunkLoadRadius; ++i) {
+                for (int j = (int)chunkPos.x - chunkLoadRadius; j <= (int)chunkPos.x + chunkLoadRadius; ++j) {
                     if (!entityHandler->getTileMap().chunkExistsAt((int) j, (int) i)) {
                         entityHandler->getTileMap().addChunk(new Chunk((int) j, (int) i, &entityHandler->getTileMap()));
                     }
                 }
             }
 
-            float speed = 6;
+            inWater = false;
+            auto [tileX, tileY] = TileMathHelper::tileCoordToInt(tilePos.x, tilePos.y);
+            auto [chunkX, chunkY, posX, posY] = TileMathHelper::tileCoordToChunkAndLocalChunkCoord(tileX, tileY);
+            Chunk* chunk = entityHandler->getTileMap().getChunk(chunkX, chunkY);
+            if (chunk != nullptr) {
 
-            if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
-                auto [tileX, tileY] = TileMathHelper::tileCoordToInt(tilePos.x, tilePos.y);
-                auto [chunkX, chunkY, posX, posY] = TileMathHelper::tileCoordToChunkAndLocalChunkCoord(tileX, tileY);
-                Chunk* chunk = entityHandler->getTileMap().getChunk(chunkX, chunkY);
-                if (chunk != nullptr) {
+                if (chunk->getTileAt(posX, posY).getTileType() == Tile::TileType::GROUND) {
+                    auto& gt = (GroundTile&) chunk->getTileAt(posX, posY);
+                    if (gt.getGroundTileType() == GroundTile::WATER) {
+                        inWater = true;
+                    }
+                }
+                if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
                     if (chunk->getTileAt(posX, posY).getTileType() == Tile::TileType::GROUND) {
                         entityHandler->getTileMap().replaceTileAt(tileX, tileY, new ObjectTile(tileX * 32, tileY * 32,
                                                                                                &entityHandler->getTileMap()));
                     }
                 }
             }
+
+            if (inWater) speed = waterSpeed;
+            else speed = groundSpeed;
 
             if (IsKeyDown(KEY_A)) {
                 velocity.x = -speed;
@@ -67,8 +78,14 @@ namespace Janus {
             }
         }
 
+        [[nodiscard]] bool isInWater() const { return inWater; }
+
     private:
         float timer = 0;
+        float groundSpeed = 10;
+        float waterSpeed = 6;
+        float speed = groundSpeed;
+        bool inWater = false;
     };
 }
 
