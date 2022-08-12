@@ -5,6 +5,9 @@
 #include <glm/glm.hpp>
 #include "texture_manager.hpp"
 #include "actor.hpp"
+#include "tile_math_helper.hpp"
+#include "object_tile.hpp"
+#include <iostream>
 
 namespace Janus {
     class Player : public Actor {
@@ -35,6 +38,18 @@ namespace Janus {
             }
 
             float speed = 6;
+
+            if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+                auto [tileX, tileY] = TileMathHelper::tileCoordToInt(tilePos.x, tilePos.y);
+                auto [chunkX, chunkY, posX, posY] = TileMathHelper::tileCoordToChunkAndLocalChunkCoord(tileX, tileY);
+                Chunk* chunk = entityHandler->getTileMap().getChunk(chunkX, chunkY);
+                if (chunk != nullptr) {
+                    if (chunk->getTileAt(posX, posY).getTileType() == Tile::TileType::GROUND) {
+                        entityHandler->getTileMap().replaceTileAt(tileX, tileY, new ObjectTile(tileX * 32, tileY * 32,
+                                                                                               &entityHandler->getTileMap()));
+                    }
+                }
+            }
 
             if (IsKeyDown(KEY_A)) {
                 velocity.x = -speed;

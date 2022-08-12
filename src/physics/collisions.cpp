@@ -5,7 +5,7 @@
 namespace Janus {
     // Simple AABB collision using two boxes
     bool Collisions::AABB(const glm::vec4& b1, const glm::vec4& b2) {
-        return !(b1.x + b1.z < b2.x || b1.x > b2.x + b2.z || b1.y + b1.w < b2.y || b1.y > b2.y + b2.w);
+        return (b1.x + b1.z > b2.x && b1.x < b2.x + b2.z && b1.y + b1.w > b2.y && b1.y < b2.y + b2.w);
     }
 
     // Used along with Swept AABB to get broad phase box of the moving box
@@ -48,13 +48,13 @@ namespace Janus {
                 normal = {1, 0};
             else
                 normal = {-1, 0};
-        } else {
-            if (invDir.y < 0) {
+        } else if (t_near.x < t_near.y) {
+            if (invDir.y < 0)
                 normal = {0, 1};
-                if (t_near.x == t_near.y)
-                    normal = {0, 0};
-            } else
+            else
                 normal = {0, -1};
+        } else {
+            normal = {invDir.x < 0 ? 0.707:-0.707, invDir.y < 0 ? 0.707:-0.707};
         }
         return true;
     }
@@ -73,6 +73,7 @@ namespace Janus {
 
         if (RayVsRect({rectDynamic.x + rectDynamic.z / 2, rectDynamic.y + rectDynamic.w / 2},
                       velocity, expandedRect, normal, contactTime)) {
+            if (AABB(rectDynamic, rectStatic)) return true;
             return (contactTime >= 0.0f && contactTime < 1.0f);
         } else {
             return false;

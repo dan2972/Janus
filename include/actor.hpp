@@ -23,14 +23,7 @@ namespace Janus {
             NONE
         };
 
-        void tick() override {
-            handleMovement();
-            chunkPos = glm::vec2{position.x > 0 ? (int)position.x / (Chunk::CHUNK_SIZE*Tile::TILE_SIZE) :
-                                 (int)(position.x - Chunk::CHUNK_SIZE*Tile::TILE_SIZE)/ (Chunk::CHUNK_SIZE*Tile::TILE_SIZE),
-                                 position.y > 0 ? (int)position.y / (Chunk::CHUNK_SIZE*Tile::TILE_SIZE) :
-                                 (int)(position.y - Chunk::CHUNK_SIZE*Tile::TILE_SIZE)/ (Chunk::CHUNK_SIZE*Tile::TILE_SIZE)};
-            tilePos = {position.x / Tile::TILE_SIZE, position.y / Tile::TILE_SIZE};
-        }
+        void tick() override;
 
         [[nodiscard]] glm::vec2 getLastPos() const { return lastPos; }
         [[nodiscard]] glm::vec2 getChunkPos() const { return chunkPos; }
@@ -60,6 +53,7 @@ namespace Janus {
     private:
         void handleMovement();
         void handleCollision(GameObject& obj);
+        void handleTileCollision(Tilemap& tilemap);
     };
 }
 

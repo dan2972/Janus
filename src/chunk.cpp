@@ -32,8 +32,8 @@ namespace Janus {
         }
     }
 
-    Tile& Chunk::getTileAt(unsigned char row, unsigned char col) {
-        return *tileChunk[CHUNK_SIZE*row + col];
+    Tile& Chunk::getTileAt(unsigned char x, unsigned char y) {
+        return *tileChunk[CHUNK_SIZE*y + x];
     }
 
     std::array<std::unique_ptr<Tile>, Chunk::CHUNK_SIZE*Chunk::CHUNK_SIZE>& Chunk::getMap() {

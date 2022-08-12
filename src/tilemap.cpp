@@ -91,7 +91,7 @@ namespace Janus {
         auto [chunkX, chunkY, localX, localY] = TileMathHelper::tileCoordToChunkAndLocalChunkCoord(x, y);
         Chunk* chunk = getChunk(chunkX, chunkY);
         if (chunk != nullptr) {
-            removeTileFromSchedule(chunk->getTileAt(localY, localX));
+            removeTileFromSchedule(chunk->getTileAt(localX, localY));
             chunk->getMap()[Chunk::CHUNK_SIZE*localY + localX].reset(tile);
         }
     }
@@ -106,7 +106,7 @@ namespace Janus {
                 if (chunk != nullptr) {
                     int tileX = j - chunkX*Chunk::CHUNK_SIZE;
                     int tileY = i - chunkY*Chunk::CHUNK_SIZE;
-                    output.emplace_back(chunk->getTileAt(tileY, tileX));
+                    output.emplace_back(chunk->getTileAt(tileX, tileY));
                 }
             }
         }
