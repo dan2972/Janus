@@ -16,7 +16,8 @@ namespace Janus {
 
         void setTargetPlayer(Player* player) {
             targetPlayer = player;
-            camera.SetOffset({400 - player->getSize().x / 2, 300 - player->getSize().y / 2});
+            camera.SetOffset({400 - (player->getSize().x / 2) * zoomValue,
+                              300 - (player->getSize().y / 2) * zoomValue});
         }
         void start() { camera.BeginMode(); }
         void end() { camera.EndMode(); }
@@ -27,10 +28,14 @@ namespace Janus {
             if (IsKeyReleased(KEY_MINUS)) {
                 zoomValue -= 0.1f;
                 camera.SetZoom(zoomValue);
+                camera.SetOffset({400 - (targetPlayer->getSize().x / 2) * zoomValue,
+                                  300 - (targetPlayer->getSize().y / 2) * zoomValue});
             }
             if (IsKeyReleased(KEY_EQUAL)) {
                 zoomValue += 0.1f;
                 camera.SetZoom(zoomValue);
+                camera.SetOffset({400 - (targetPlayer->getSize().x / 2) * zoomValue,
+                                  300 - (targetPlayer->getSize().y / 2) * zoomValue});
             }
         }
 

@@ -16,7 +16,7 @@ namespace Janus {
                     if (actor->getActorType() == Actor::PLAYER) {
                         auto* player = (Player*) actor;
                         if (player->isInWater()) {
-                            DrawRectangle(renderPos.x - 2, renderPos.y+actor->getSize().y/2,
+                            DrawRectangle(renderPos.x - 2, renderPos.y+actor->getSize().y/2 - 4,
                                           actor->getSize().x + 4, 10, SKYBLUE);
                             DrawTexturePro(*texture, raylib::Rectangle({0,0}, {(float)texture->width, (float)texture->height / 2}),
                                            raylib::Rectangle({renderPos.x, renderPos.y}, {actor->getSize().x, actor->getSize().y / 2}),
@@ -29,7 +29,7 @@ namespace Janus {
                     }
                     break;
                 case Actor::ActorType::NONE:
-                    DrawRectangle(actor->getPos().x, actor->getPos().y, actor->getSize().x, actor->getSize().y, {200, 255, 200, 255});
+                    DrawRectangle(renderPos.x, renderPos.y, actor->getSize().x, actor->getSize().y, {200, 255, 200, 255});
                     break;
             }
         }

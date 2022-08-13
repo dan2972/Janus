@@ -2,6 +2,7 @@
 #include "texture_manager.hpp"
 #include "random_generator.hpp"
 #include "noise/perlin_generator.hpp"
+#include "drone.hpp"
 
 namespace Janus {
     int Game::screenWidth = 800;
@@ -14,6 +15,8 @@ namespace Janus {
         TextureManager::LoadTexture("resources/slime.png");
         player = new Player(10, 10, &entityHandler);
         entityHandler.add(player);
+        for (int i = 0; i < 1000; ++i)
+            entityHandler.add(new Drone(0, 0, &entityHandler));
 
         camera.setTargetPlayer(player);
 

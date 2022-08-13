@@ -18,7 +18,7 @@ namespace Janus {
             size.y = 32;
 
             collisionResponseType = CollisionResponseType::SLIDE;
-            collidesWithActors = true;
+            collidesWithActors = false;
             collidesWithTiles = true;
 
             actorType = ActorType::PLAYER;
