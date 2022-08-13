@@ -63,7 +63,7 @@ namespace Janus {
         }
         for (auto & obj : actorList) {
             obj->tick();
-            auto& actor = (Actor&) obj;
+            auto& actor = (Actor&) *obj;
             if (actor.getActorType() == Actor::ActorType::PLAYER) {
                 tilemap.addChunksToRandomTickList((int)actor.getChunkPos().x, (int)actor.getChunkPos().y, RANDOM_TICK_RANGE);
             }
