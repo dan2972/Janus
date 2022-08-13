@@ -65,15 +65,15 @@ namespace Janus {
             obj->tick();
             auto& actor = (Actor&) obj;
             if (actor.getActorType() == Actor::ActorType::PLAYER) {
-                tilemap.addChunksToRandomTickList((int)actor.getChunkPos().x, (int)actor.getChunkPos().y, 1);
+                tilemap.addChunksToRandomTickList((int)actor.getChunkPos().x, (int)actor.getChunkPos().y, RANDOM_TICK_RANGE);
             }
         }
         tilemap.tick();
-        tilemap.randomTick(1);
+        tilemap.randomTick(RANDOM_TICK_RATE);
     }
 
-    void EntityHandler::render(int centerChunkPosX, int centerChunkPosY, float dt) {
-        entityRenderer.renderTilemap(centerChunkPosX, centerChunkPosY, CHUNK_RENDER_DISTANCE, dt);
+    void EntityHandler::render(GameCamera& camera, int centerChunkPosX, int centerChunkPosY, float dt) {
+        entityRenderer.renderTilemap(camera, centerChunkPosX, centerChunkPosY, CHUNK_RENDER_DISTANCE, dt);
         entityRenderer.renderActors(actorList, dt);
     }
 

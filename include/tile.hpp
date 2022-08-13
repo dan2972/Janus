@@ -36,7 +36,7 @@ namespace Janus {
             NONE
         };
 
-        TileType getTileType() { return tileType; }
+        [[nodiscard]] TileType getTileType() const { return tileType; }
     protected:
         Tilemap* tilemap = nullptr;
         TileType tileType;

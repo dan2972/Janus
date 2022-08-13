@@ -3,41 +3,18 @@
 
 #include <raylib-cpp.hpp>
 #include <glm/glm.hpp>
-#include "player.hpp"
 
 namespace Janus {
+    class Player;
     class GameCamera {
     public:
-        GameCamera() {
-            camera.SetZoom(zoomValue);
-            camera.SetRotation(0);
-            camera.SetOffset({0, 0});
-        }
+        GameCamera();
 
-        void setTargetPlayer(Player* player) {
-            targetPlayer = player;
-            camera.SetOffset({400 - (player->getSize().x / 2) * zoomValue,
-                              300 - (player->getSize().y / 2) * zoomValue});
-        }
         void start() { camera.BeginMode(); }
         void end() { camera.EndMode(); }
-        void update(float dt) {
-            pos = glm::mix(targetPlayer->getLastPos(), targetPlayer->getPos(), dt);
-            camera.SetTarget({pos.x, pos.y});
 
-            if (IsKeyReleased(KEY_MINUS)) {
-                zoomValue -= 0.1f;
-                camera.SetZoom(zoomValue);
-                camera.SetOffset({400 - (targetPlayer->getSize().x / 2) * zoomValue,
-                                  300 - (targetPlayer->getSize().y / 2) * zoomValue});
-            }
-            if (IsKeyReleased(KEY_EQUAL)) {
-                zoomValue += 0.1f;
-                camera.SetZoom(zoomValue);
-                camera.SetOffset({400 - (targetPlayer->getSize().x / 2) * zoomValue,
-                                  300 - (targetPlayer->getSize().y / 2) * zoomValue});
-            }
-        }
+        void update(float dt);
+        void setTargetPlayer(Player* player);
 
     private:
         raylib::Camera2D camera;

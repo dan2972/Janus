@@ -7,6 +7,7 @@
 #include "game_object.hpp"
 #include "tilemap.hpp"
 #include "entity_renderer.hpp"
+#include "game_camera.hpp"
 
 namespace Janus {
     class EntityHandler {
@@ -17,7 +18,7 @@ namespace Janus {
         void remove(GameObject& obj);
 
         void update();
-        void render(int centerChunkPosX, int centerChunkPosY, float dt);
+        void render(GameCamera& camera, int centerChunkPosX, int centerChunkPosY, float dt);
 
         std::vector<std::unique_ptr<GameObject>>& getList(GameObject::Type type);
         Tilemap& getTileMap();

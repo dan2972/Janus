@@ -3,6 +3,7 @@
 #include "actor.hpp"
 #include "ground_tile.hpp"
 #include "player.hpp"
+#include "chunk_renderer.hpp"
 
 namespace Janus {
     void EntityRenderer::renderActors(const std::vector<std::unique_ptr<GameObject>>& actorList, float dt) {
@@ -28,6 +29,9 @@ namespace Janus {
                         }
                     }
                     break;
+                case Actor::ActorType::DRONE:
+                    DrawRectangle(renderPos.x, renderPos.y, actor->getSize().x, actor->getSize().y, {200, 255, 200, 255});
+                    break;
                 case Actor::ActorType::NONE:
                     DrawRectangle(renderPos.x, renderPos.y, actor->getSize().x, actor->getSize().y, {200, 255, 200, 255});
                     break;
@@ -35,32 +39,14 @@ namespace Janus {
         }
     }
 
-    void EntityRenderer::renderTilemap(int centerX, int centerY, int radius, float dt) {
+    void EntityRenderer::renderTilemap(GameCamera& camera, int centerX, int centerY, int radius, float dt) {
         for (int i = centerY - radius; i <= centerY + radius; ++i) {
             for (int j = centerX - radius; j <= centerX + radius; ++j) {
                 Chunk* chunk = tilemap->getChunk(j, i);
                 if (chunk != nullptr) {
-                    for (auto& tile : chunk->getMap()) {
-                        drawTile(*tile);
-                    }
+                    ChunkRenderer::drawChunk(*chunk, camera);
                 }
             }
-        }
-    }
-
-    void EntityRenderer::drawTile(Tile &tile) {
-        if (tile.getTileType() == Tile::TileType::GROUND) {
-            auto& gt = (GroundTile&) tile;
-            if (gt.getGroundTileType() == GroundTile::GRASS)
-                DrawRectangle(gt.getPos().x, gt.getPos().y, gt.TILE_SIZE, gt.TILE_SIZE, {120,170,100,255});
-            else if (gt.getGroundTileType() == GroundTile::WATER)
-                DrawRectangle(gt.getPos().x, gt.getPos().y, gt.TILE_SIZE, gt.TILE_SIZE, {80,150,205,255});
-            else if (gt.getGroundTileType() == GroundTile::SAND)
-                DrawRectangle(gt.getPos().x, gt.getPos().y, gt.TILE_SIZE, gt.TILE_SIZE, {195,185,120,255});
-            else if (gt.getGroundTileType() == GroundTile::STONE)
-                DrawRectangle(gt.getPos().x, gt.getPos().y, gt.TILE_SIZE, gt.TILE_SIZE, GRAY);
-        } else if (tile.getTileType() == Tile::TileType::OBJECT) {
-            DrawRectangle(tile.getPos().x, tile.getPos().y, tile.TILE_SIZE, tile.TILE_SIZE, DARKGRAY);
         }
     }
 

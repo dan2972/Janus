@@ -15,8 +15,8 @@ namespace Janus {
         TextureManager::LoadTexture("resources/slime.png");
         player = new Player(10, 10, &entityHandler);
         entityHandler.add(player);
-        for (int i = 0; i < 1000; ++i)
-            entityHandler.add(new Drone(0, 0, &entityHandler));
+        //for (int i = 0; i < 1000; ++i)
+        //    entityHandler.add(new Drone(0, 0, &entityHandler));
 
         camera.setTargetPlayer(player);
 
@@ -63,7 +63,7 @@ namespace Janus {
 
             camera.start();
 
-                entityHandler.render(player->getChunkPos().x, player->getChunkPos().y, dt);
+                entityHandler.render(camera, player->getChunkPos().x, player->getChunkPos().y, dt);
 
             camera.end();
 

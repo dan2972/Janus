@@ -17,12 +17,17 @@ namespace Janus {
         Tile& getTileAt(unsigned char x, unsigned char y);
         std::array<std::unique_ptr<Tile>, CHUNK_SIZE*CHUNK_SIZE>& getMap();
 
+        void requestTextureUpdate() { updateTexture = true; }
+        void finishUpdatingTexture() { updateTexture = false; }
+
         [[nodiscard]] int getChunkX() const { return chunkX; }
         [[nodiscard]] int getChunkY() const { return chunkY; }
+        [[nodiscard]] bool updateTextureRequested() const { return updateTexture; }
 
     private:
         std::array<std::unique_ptr<Tile>, CHUNK_SIZE*CHUNK_SIZE> tileChunk{nullptr};
         int chunkX, chunkY;
+        bool updateTexture = false;
     };
 }
 

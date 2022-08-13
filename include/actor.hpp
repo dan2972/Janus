@@ -20,6 +20,7 @@ namespace Janus {
 
         enum ActorType {
             PLAYER,
+            DRONE,
             NONE
         };
 

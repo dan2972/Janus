@@ -14,7 +14,7 @@ namespace Janus {
             collidesWithActors = false;
             collidesWithTiles = true;
 
-            actorType = ActorType::NONE;
+            actorType = ActorType::DRONE;
         }
 
         void tick() override {

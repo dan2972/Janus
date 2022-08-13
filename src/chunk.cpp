@@ -6,6 +6,7 @@
 
 namespace Janus {
     Chunk::Chunk(int chunkX, int chunkY, Tilemap* tilemap) : chunkX{chunkX}, chunkY(chunkY){
+        requestTextureUpdate();
         for (unsigned char i = 0; i < CHUNK_SIZE; ++i) {
             for (unsigned char j = 0; j < CHUNK_SIZE; ++j) {
                 float p = 1.0f-PerlinGenerator::getValueAt(chunkX * CHUNK_SIZE + j, chunkY * CHUNK_SIZE+i, 0.03);
