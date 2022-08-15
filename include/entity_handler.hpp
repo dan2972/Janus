@@ -19,6 +19,8 @@ namespace Janus {
 
         void update();
         void render(GameCamera& camera, int centerChunkPosX, int centerChunkPosY, float dt);
+        void loadChunks(int centerChunkPosX, int centerChunkPosY, int radius);
+        void preloadTilemapTextures(GameCamera& camera, int centerChunkPosX, int centerChunkPosY);
 
         std::vector<std::unique_ptr<GameObject>>& getList(GameObject::Type type);
         Tilemap& getTileMap();

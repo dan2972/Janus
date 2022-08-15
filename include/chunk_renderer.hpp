@@ -10,8 +10,9 @@
 namespace Janus {
     class ChunkRenderer {
     public:
-        static void drawChunk(Chunk& chunk, GameCamera& camera);
-        static void drawTile(const Tile& tile);
+        static void loadChunk(Tilemap& tilemap, Chunk& chunk, GameCamera& camera);
+        static void drawChunk(Tilemap& tilemap, Chunk& chunk, GameCamera& camera);
+        static void drawTile(Tilemap& tilemap, const Tile& tile);
 
     private:
         static std::unordered_map<std::string, raylib::Texture2D> textureMap;

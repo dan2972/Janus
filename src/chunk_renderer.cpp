@@ -2,45 +2,53 @@
 #include "ground_tile.hpp"
 #include "tile_math_helper.hpp"
 #include "game.hpp"
+#include "wall_tile_renderer.hpp"
 
 namespace Janus {
     std::unordered_map<std::string, raylib::Texture2D> ChunkRenderer::textureMap;
 
-    void ChunkRenderer::drawChunk(Chunk& chunk, GameCamera& camera) {
+    void ChunkRenderer::loadChunk(Tilemap &tilemap, Chunk &chunk, GameCamera &camera) {
         std::string key = std::to_string(chunk.getChunkX()) + "," + std::to_string(chunk.getChunkY());
-        if (chunk.updateTextureRequested()) {
-            raylib::RenderTexture2D target{Chunk::CHUNK_SIZE * Tile::TILE_SIZE, Chunk::CHUNK_SIZE * Tile::TILE_SIZE};
+        raylib::RenderTexture2D target{Chunk::CHUNK_SIZE * Tile::TILE_SIZE, Chunk::CHUNK_SIZE * Tile::TILE_SIZE};
 
-            auto it = textureMap.find(key);
-            if (it != textureMap.end()) {
-                textureMap.erase(it);
-            }
-
-            camera.end();
-
-            target.BeginMode();
-            ClearBackground(WHITE);
-            for (auto& tile : chunk.getMap()) {
-                drawTile(*tile);
-            }
-            target.EndMode();
-
-            camera.start();
-
-            raylib::Image image{target.GetTexture()};
-            textureMap.insert({key, raylib::Texture2D{image}});
-            target.Unload();
+        auto it = textureMap.find(key);
+        if (it != textureMap.end()) {
+            textureMap.erase(it);
         }
+
+        camera.end();
+
+        target.BeginMode();
+        ClearBackground(WHITE);
+        for (auto& tile : chunk.getMap()) {
+            drawTile(tilemap, *tile);
+        }
+        target.EndMode();
+
+        camera.start();
+
+        raylib::Image image{target.GetTexture()};
+        textureMap.insert({key, raylib::Texture2D{image}});
+        target.Unload();
+
+        chunk.finishUpdatingTexture();
+    }
+
+    void ChunkRenderer::drawChunk(Tilemap& tilemap, Chunk& chunk, GameCamera& camera) {
+        if (chunk.updateTextureRequested()) {
+            loadChunk(tilemap, chunk, camera);
+        }
+
+        std::string key = std::to_string(chunk.getChunkX()) + "," + std::to_string(chunk.getChunkY());
 
         raylib::Texture2D& texture = textureMap.at(key);
         texture.Draw({0, 0, (float)texture.width, -(float)texture.height},
                      {(float)chunk.getChunkX() * Tile::TILE_SIZE * Chunk::CHUNK_SIZE,
                       (float)chunk.getChunkY() * Tile::TILE_SIZE * Chunk::CHUNK_SIZE},
                      WHITE);
-        chunk.finishUpdatingTexture();
     }
 
-    void ChunkRenderer::drawTile(const Tile &tile) {
+    void ChunkRenderer::drawTile(Tilemap& tilemap, const Tile &tile) {
         auto [localX, localY] = TileMathHelper::tileCoordToLocalChunkCoord(tile.getPos().x / Tile::TILE_SIZE,
                                                                            tile.getPos().y / Tile::TILE_SIZE);
         int tileX = (int)localX * Tile::TILE_SIZE;
@@ -56,7 +64,10 @@ namespace Janus {
             else if (gt.getGroundTileType() == GroundTile::STONE)
                 DrawRectangle(tileX, tileY, gt.TILE_SIZE, gt.TILE_SIZE, GRAY);
         } else if (tile.getTileType() == Tile::TileType::OBJECT) {
-            DrawRectangle(tileX, tileY, tile.TILE_SIZE, tile.TILE_SIZE, DARKGRAY);
+            auto& ot = (ObjectTile&) tile;
+            if (ot.getObjectTileType() == ObjectTile::WALL) {
+                WallTileRenderer::drawWall(tilemap, ot);
+            }
         }
     }
 }

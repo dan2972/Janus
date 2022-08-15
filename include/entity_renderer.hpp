@@ -13,6 +13,7 @@ namespace Janus {
 
         void renderActors(const std::vector<std::unique_ptr<GameObject>>& actorList, float dt);
         void renderTilemap(GameCamera& camera, int centerX, int centerY, int radius, float dt);
+        void preloadTilemapTextures(GameCamera& camera, int centerX, int centerY, int radius);
         void renderProjectiles();
         void renderParticles();
     private:

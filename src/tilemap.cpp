@@ -94,6 +94,23 @@ namespace Janus {
             removeTileFromSchedule(chunk->getTileAt(localX, localY));
             chunk->getMap()[Chunk::CHUNK_SIZE*localY + localX].reset(tile);
             chunk->requestTextureUpdate();
+
+            if (localX == 0) {
+                if(getChunk(chunkX-1, chunkY) != nullptr)
+                    getChunk(chunkX-1, chunkY)->requestTextureUpdate();
+            }
+            if (localY == 0) {
+                if(getChunk(chunkX, chunkY-1) != nullptr)
+                    getChunk(chunkX, chunkY-1)->requestTextureUpdate();
+            }
+            if (localX == Chunk::CHUNK_SIZE-1) {
+                if(getChunk(chunkX+1, chunkY) != nullptr)
+                    getChunk(chunkX+1, chunkY)->requestTextureUpdate();
+            }
+            if (localY == Chunk::CHUNK_SIZE-1) {
+                if(getChunk(chunkX, chunkY+1) != nullptr)
+                    getChunk(chunkX, chunkY+1)->requestTextureUpdate();
+            }
         }
     }
 

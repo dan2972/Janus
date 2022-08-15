@@ -39,12 +39,23 @@ namespace Janus {
         }
     }
 
+    void EntityRenderer::preloadTilemapTextures(GameCamera& camera, int centerX, int centerY, int radius) {
+        for (int i = centerY - radius; i <= centerY + radius; ++i) {
+            for (int j = centerX - radius; j <= centerX + radius; ++j) {
+                Chunk* chunk = tilemap->getChunk(j, i);
+                if (chunk != nullptr) {
+                    ChunkRenderer::loadChunk(*tilemap, *chunk, camera);
+                }
+            }
+        }
+    }
+
     void EntityRenderer::renderTilemap(GameCamera& camera, int centerX, int centerY, int radius, float dt) {
         for (int i = centerY - radius; i <= centerY + radius; ++i) {
             for (int j = centerX - radius; j <= centerX + radius; ++j) {
                 Chunk* chunk = tilemap->getChunk(j, i);
                 if (chunk != nullptr) {
-                    ChunkRenderer::drawChunk(*chunk, camera);
+                    ChunkRenderer::drawChunk(*tilemap, *chunk, camera);
                 }
             }
         }

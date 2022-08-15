@@ -6,10 +6,24 @@
 namespace Janus {
     class ObjectTile : public Tile{
     public:
+        enum ObjectTileType {
+            WALL,
+            NONE
+        };
+
         ObjectTile(float x, float y, Tilemap* tilemap) : Tile(x, y, tilemap) {
             tileType = TileType::OBJECT;
+            objectTileType = ObjectTileType::WALL;
         }
+
+        ObjectTile(float x, float y, Tilemap* tilemap, ObjectTileType objectTileType)
+            : Tile(x, y, tilemap), objectTileType{objectTileType} {
+            tileType = TileType::OBJECT;
+        }
+
+        [[nodiscard]] ObjectTileType getObjectTileType() const { return objectTileType; };
     private:
+        ObjectTileType objectTileType;
     };
 }
 

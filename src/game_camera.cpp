@@ -1,5 +1,6 @@
 #include "game_camera.hpp"
 #include "player.hpp"
+#include "global_values.hpp"
 
 namespace Janus {
     GameCamera::GameCamera() {
@@ -10,8 +11,8 @@ namespace Janus {
 
     void GameCamera::setTargetPlayer(Player *player) {
         targetPlayer = player;
-        camera.SetOffset({400 - (player->getSize().x / 2) * zoomValue,
-                          300 - (player->getSize().y / 2) * zoomValue});
+        camera.SetOffset({(SCREEN_WIDTH / 2) - (player->getSize().x / 2) * zoomValue,
+                          (SCREEN_HEIGHT / 2) - (player->getSize().y / 2) * zoomValue});
     }
 
     void GameCamera::update(float dt) {
@@ -21,14 +22,14 @@ namespace Janus {
         if (IsKeyReleased(KEY_MINUS)) {
             zoomValue -= 0.1f;
             camera.SetZoom(zoomValue);
-            camera.SetOffset({400 - (targetPlayer->getSize().x / 2) * zoomValue,
-                              300 - (targetPlayer->getSize().y / 2) * zoomValue});
+            camera.SetOffset({(SCREEN_WIDTH / 2) - (targetPlayer->getSize().x / 2) * zoomValue,
+                              (SCREEN_HEIGHT / 2) - (targetPlayer->getSize().y / 2) * zoomValue});
         }
         if (IsKeyReleased(KEY_EQUAL)) {
             zoomValue += 0.1f;
             camera.SetZoom(zoomValue);
-            camera.SetOffset({400 - (targetPlayer->getSize().x / 2) * zoomValue,
-                              300 - (targetPlayer->getSize().y / 2) * zoomValue});
+            camera.SetOffset({(SCREEN_WIDTH / 2) - (targetPlayer->getSize().x / 2) * zoomValue,
+                              (SCREEN_HEIGHT / 2) - (targetPlayer->getSize().y / 2) * zoomValue});
         }
     }
 }

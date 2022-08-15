@@ -6,6 +6,7 @@
 #include "tilemap.hpp"
 #include "player.hpp"
 #include "game_camera.hpp"
+#include "global_values.hpp"
 
 namespace Janus {
     class Game {
@@ -14,10 +15,8 @@ namespace Janus {
 
         void run();
 
-        static int screenWidth;
-        static int screenHeight;
     private:
-        raylib::Window window{screenWidth, screenHeight, "Janus"};
+        raylib::Window window{SCREEN_WIDTH, SCREEN_HEIGHT, "Janus"};
         GameCamera camera;
         EntityHandler entityHandler;
         Player* player;

@@ -23,7 +23,7 @@ namespace Janus {
 
         Player* targetPlayer = nullptr;
 
-        float zoomValue = 0.5f;
+        float zoomValue = 1.0f;
     };
 }
 

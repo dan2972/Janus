@@ -66,10 +66,26 @@ namespace Janus {
             auto& actor = (Actor&) *obj;
             if (actor.getActorType() == Actor::ActorType::PLAYER) {
                 tilemap.addChunksToRandomTickList((int)actor.getChunkPos().x, (int)actor.getChunkPos().y, RANDOM_TICK_RANGE);
+
+                loadChunks(actor.getChunkPos().x, actor.getChunkPos().y, CHUNK_LOAD_DISTANCE);
             }
         }
         tilemap.tick();
         tilemap.randomTick(RANDOM_TICK_RATE);
+    }
+
+    void EntityHandler::loadChunks(int centerChunkPosX, int centerChunkPosY, int radius) {
+        for (int i = (int)centerChunkPosY - radius; i <= (int)centerChunkPosY + radius; ++i) {
+            for (int j = (int)centerChunkPosX - radius; j <= (int)centerChunkPosX + radius; ++j) {
+                if (!tilemap.chunkExistsAt((int) j, (int) i)) {
+                    tilemap.addChunk(new Chunk((int) j, (int) i, &tilemap));
+                }
+            }
+        }
+    }
+
+    void EntityHandler::preloadTilemapTextures(GameCamera& camera, int centerChunkPosX, int centerChunkPosY) {
+        entityRenderer.preloadTilemapTextures(camera, centerChunkPosX, centerChunkPosY, CHUNK_PRELOAD_DISTANCE);
     }
 
     void EntityHandler::render(GameCamera& camera, int centerChunkPosX, int centerChunkPosY, float dt) {
