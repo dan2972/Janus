@@ -55,9 +55,20 @@ namespace Janus {
             for (int j = centerX - radius; j <= centerX + radius; ++j) {
                 Chunk* chunk = tilemap->getChunk(j, i);
                 if (chunk != nullptr) {
-                    ChunkRenderer::drawChunk(*tilemap, *chunk, camera);
+                    if (!chunk->updateTextureRequested())
+                        ChunkRenderer::drawChunk(*tilemap, *chunk, camera);
+                    else if (!chunk->isWaitingForTextureUpdate()){
+                        chunk->waitForTextureUpdate();
+                        chunkRenderQueue.push(std::ref(*chunk));
+                    }
                 }
             }
+        }
+        int counter = MAX_CHUNK_TEXTURE_LOAD_PER_TICK;
+        while (!chunkRenderQueue.empty() && counter > 0) {
+            ChunkRenderer::drawChunk(*tilemap, chunkRenderQueue.front().get(), camera);
+            chunkRenderQueue.pop();
+            counter--;
         }
     }
 

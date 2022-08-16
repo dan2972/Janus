@@ -19,15 +19,19 @@ namespace Janus {
 
         void requestTextureUpdate() { updateTexture = true; }
         void finishUpdatingTexture() { updateTexture = false; }
+        void waitForTextureUpdate() { waitingForTextureUpdate = true; }
+        void clearWaitingForTextureUpdate() { waitingForTextureUpdate = false; }
 
         [[nodiscard]] int getChunkX() const { return chunkX; }
         [[nodiscard]] int getChunkY() const { return chunkY; }
         [[nodiscard]] bool updateTextureRequested() const { return updateTexture; }
+        [[nodiscard]] bool isWaitingForTextureUpdate() const { return waitingForTextureUpdate; }
 
     private:
         std::array<std::unique_ptr<Tile>, CHUNK_SIZE*CHUNK_SIZE> tileChunk{nullptr};
         int chunkX, chunkY;
         bool updateTexture = false;
+        bool waitingForTextureUpdate = false;
     };
 }
 

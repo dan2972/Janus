@@ -61,10 +61,12 @@ namespace Janus {
                                                                                  &entityHandler->getTileMap()));
                     }
                 } else if (InputManager::PlayerPlaceDown()){
-                    entityHandler->getTileMap().replaceTileAt(mTileX, mTileY,
-                                                              new GroundTile(mTileX * 32, mTileY * 32,
-                                                                             GroundTile::STONE,
-                                                                             &entityHandler->getTileMap()));
+                    if (mouseTile->getTileType() == Tile::TileType::OBJECT) {
+                        entityHandler->getTileMap().replaceTileAt(mTileX, mTileY,
+                                                                  new GroundTile(mTileX * 32, mTileY * 32,
+                                                                                 GroundTile::STONE,
+                                                                                 &entityHandler->getTileMap()));
+                    }
                 }
             }
 

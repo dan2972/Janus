@@ -5,6 +5,7 @@ namespace Janus {
     static const int CHUNK_LOAD_DISTANCE = 12;
     static const int CHUNK_RENDER_DISTANCE = 3;
     static const int CHUNK_PRELOAD_DISTANCE = 7;
+    static const int MAX_CHUNK_TEXTURE_LOAD_PER_TICK = 4;
     static const int RANDOM_TICK_RANGE = 7;
     static const int RANDOM_TICK_RATE = 1;
     static int SCREEN_WIDTH = 1280;

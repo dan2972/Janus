@@ -32,6 +32,7 @@ namespace Janus {
         target.Unload();
 
         chunk.finishUpdatingTexture();
+        chunk.clearWaitingForTextureUpdate();
     }
 
     void ChunkRenderer::drawChunk(Tilemap& tilemap, Chunk& chunk, GameCamera& camera) {

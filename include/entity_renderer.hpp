@@ -18,6 +18,7 @@ namespace Janus {
         void renderParticles();
     private:
         Tilemap* tilemap = nullptr;
+        std::queue<std::reference_wrapper<Chunk>> chunkRenderQueue;
     };
 }
 
