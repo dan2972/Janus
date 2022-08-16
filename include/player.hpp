@@ -9,13 +9,15 @@
 #include "object_tile.hpp"
 #include "global_values.hpp"
 #include "ground_tile.hpp"
+#include "input_manager.hpp"
 
 namespace Janus {
     class Player : public Actor {
     public:
-        Player(float x, float y, EntityHandler* entityHandler) : Actor(x, y, entityHandler) {
-            size.x = 32;
-            size.y = 32;
+        Player(float x, float y, EntityHandler* entityHandler, GameCamera* camera)
+            : Actor(x, y, entityHandler), camera{camera} {
+            size.x = 20;
+            size.y = 26;
 
             collisionResponseType = CollisionResponseType::SLIDE;
             collidesWithActors = false;
@@ -41,37 +43,44 @@ namespace Janus {
 
             inWater = false;
             auto [tileX, tileY] = TileMathHelper::tileCoordToInt(tilePos.x, tilePos.y);
-            auto [chunkX, chunkY, posX, posY] = TileMathHelper::tileCoordToChunkAndLocalChunkCoord(tileX, tileY);
-            Chunk* chunk = entityHandler->getTileMap().getChunk(chunkX, chunkY);
-            if (chunk != nullptr) {
-
-                if (chunk->getTileAt(posX, posY).getTileType() == Tile::TileType::GROUND) {
-                    auto& gt = (GroundTile&) chunk->getTileAt(posX, posY);
-                    if (gt.getGroundTileType() == GroundTile::WATER) {
-                        inWater = true;
-                    }
+            Tile* currTile = entityHandler->getTileMap().getTileAt(tileX, tileY);
+            if (currTile != nullptr && currTile->getTileType() == Tile::TileType::GROUND) {
+                auto* gt = (GroundTile*) currTile;
+                if (gt->getGroundTileType() == GroundTile::WATER) {
+                    inWater = true;
                 }
-                if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
-                    if (chunk->getTileAt(posX, posY).getTileType() == Tile::TileType::GROUND) {
-                        entityHandler->getTileMap().replaceTileAt(tileX, tileY, new ObjectTile(tileX * 32, tileY * 32,
-                                                                                               &entityHandler->getTileMap()));
+            }
+
+            auto[mTileX, mTileY] = TileMathHelper::screenCoordToTileCoordInt(GetMouseX(), GetMouseY(), *camera);
+            Tile* mouseTile = entityHandler->getTileMap().getTileAt(mTileX, mTileY);
+            if (mouseTile != nullptr ) {
+                if (InputManager::PlayerAttackDown()) {
+                    if (mouseTile->getTileType() == Tile::TileType::GROUND) {
+                        entityHandler->getTileMap().replaceTileAt(mTileX, mTileY,
+                                                                  new ObjectTile(mTileX * 32, mTileY * 32,
+                                                                                 &entityHandler->getTileMap()));
                     }
+                } else if (InputManager::PlayerPlaceDown()){
+                    entityHandler->getTileMap().replaceTileAt(mTileX, mTileY,
+                                                              new GroundTile(mTileX * 32, mTileY * 32,
+                                                                             GroundTile::STONE,
+                                                                             &entityHandler->getTileMap()));
                 }
             }
 
             if (inWater) speed = waterSpeed;
             else speed = groundSpeed;
 
-            if (IsKeyDown(KEY_A)) {
+            if (InputManager::MoveLeftDown()) {
                 velocity.x = -speed;
-            } else if (IsKeyDown(KEY_D)) {
+            } else if (InputManager::MoveRightDown()) {
                 velocity.x = speed;
             }else {
                 velocity.x = 0;
             }
-            if (IsKeyDown(KEY_S)) {
+            if (InputManager::MoveDownDown()) {
                 velocity.y = speed;
-            } else if (IsKeyDown(KEY_W)) {
+            } else if (InputManager::MoveUpDown()) {
                 velocity.y = -speed;
             } else {
                 velocity.y = 0;
@@ -81,6 +90,8 @@ namespace Janus {
         [[nodiscard]] bool isInWater() const { return inWater; }
 
     private:
+        GameCamera* camera;
+
         float timer = 0;
         float groundSpeed = 10;
         float waterSpeed = 6;

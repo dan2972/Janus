@@ -87,8 +87,17 @@ namespace Janus {
         return nullptr;
     }
 
-    void Tilemap::replaceTileAt(int x, int y, Tile* tile) {
-        auto [chunkX, chunkY, localX, localY] = TileMathHelper::tileCoordToChunkAndLocalChunkCoord(x, y);
+    Tile* Tilemap::getTileAt(int tileX, int tileY) {
+        auto [chunkX, chunkY, localX, localY] = TileMathHelper::tileCoordToChunkAndLocalChunkCoord(tileX, tileY);
+        Chunk* chunk = getChunk(chunkX, chunkY);
+        if (chunk != nullptr) {
+            return &chunk->getTileAt(localX, localY);
+        }
+        return nullptr;
+    }
+
+    void Tilemap::replaceTileAt(int tileX, int tileY, Tile* tile) {
+        auto [chunkX, chunkY, localX, localY] = TileMathHelper::tileCoordToChunkAndLocalChunkCoord(tileX, tileY);
         Chunk* chunk = getChunk(chunkX, chunkY);
         if (chunk != nullptr) {
             removeTileFromSchedule(chunk->getTileAt(localX, localY));

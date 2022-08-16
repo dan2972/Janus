@@ -28,7 +28,9 @@ namespace Janus {
         Chunk* getChunk(int chunkX, int chunkY);
         Chunk* getChunk(const std::string& key);
 
-        void replaceTileAt(int x, int y, Tile* tile);
+        Tile* getTileAt(int tileX, int tileY);
+
+        void replaceTileAt(int tileX, int tileY, Tile* tile);
 
         // Returns a vector of tiles from x1, y2 (top left) to x2, y2 (bottom right)
         std::vector<std::reference_wrapper<Tile>> getTilesInRange(int x1, int y1, int x2, int y2);

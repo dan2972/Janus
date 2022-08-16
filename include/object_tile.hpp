@@ -16,7 +16,7 @@ namespace Janus {
             objectTileType = ObjectTileType::WALL;
         }
 
-        ObjectTile(float x, float y, Tilemap* tilemap, ObjectTileType objectTileType)
+        ObjectTile(float x, float y, ObjectTileType objectTileType, Tilemap* tilemap)
             : Tile(x, y, tilemap), objectTileType{objectTileType} {
             tileType = TileType::OBJECT;
         }

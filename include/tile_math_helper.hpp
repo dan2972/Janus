@@ -3,12 +3,23 @@
 
 #include <utility>
 #include "chunk.hpp"
+#include "game_camera.hpp"
 
 namespace Janus {
     class TileMathHelper {
     public:
         static std::pair<int, int> tileCoordToInt(float x, float y) {
             return {x < 0 ? x - 1 : x, y < 0 ? y - 1 : y};
+        }
+
+        static std::pair<int, int> screenCoordToTileCoordInt(int x, int y, const GameCamera& camera) {
+            float mx = x / camera.getZoom();
+            float my = y / camera.getZoom();
+            mx += camera.getPos().x - camera.getOffset().x / camera.getZoom();
+            my += camera.getPos().y - camera.getOffset().y / camera.getZoom();
+            mx /= (Tile::TILE_SIZE);
+            my /= (Tile::TILE_SIZE);
+            return {mx < 0 ? mx - 1 : mx, my < 0 ? my - 1 : my};
         }
 
         static std::pair<int, int> tileCoordToChunk(int tileX, int tileY) {

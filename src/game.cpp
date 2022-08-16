@@ -3,6 +3,7 @@
 #include "random_generator.hpp"
 #include "noise/perlin_generator.hpp"
 #include "drone.hpp"
+#include "input_manager.hpp"
 
 namespace Janus {
     Game::Game() {
@@ -10,10 +11,12 @@ namespace Janus {
         window.ClearState(FLAG_VSYNC_HINT);
         SetTraceLogLevel(LOG_FATAL | LOG_ERROR | LOG_WARNING);
 
+        InputManager::Initialize();
+
         TextureManager::LoadTexture("resources/slime.png");
         TextureManager::LoadTexture("resources/player.png");
         TextureManager::LoadTexture("resources/stone_wall_sheet.png");
-        player = new Player(10, 10, &entityHandler);
+        player = new Player(10, 10, &entityHandler, &camera);
         entityHandler.add(player);
         //for (int i = 0; i < 1000; ++i)
         //    entityHandler.add(new Drone(0, 0, &entityHandler));
@@ -27,7 +30,7 @@ namespace Janus {
         window.ClearBackground(GRAY);
         raylib::DrawText(std::string("LOADING CHUNKS"), SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2, 20, WHITE);
         window.EndDrawing();
-        entityHandler.loadChunks(0, 0, CHUNK_PRELOAD_DISTANCE);
+        entityHandler.loadChunks(0, 0, CHUNK_PRELOAD_DISTANCE+1);
         entityHandler.preloadTilemapTextures(camera, 0, 0);
     }
 

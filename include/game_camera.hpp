@@ -16,6 +16,10 @@ namespace Janus {
         void update(float dt);
         void setTargetPlayer(Player* player);
 
+        [[nodiscard]] glm::vec2 getPos() const { return pos; };
+        [[nodiscard]] glm::vec2 getOffset() const { return {camera.GetOffset().x, camera.GetOffset().y}; };
+        [[nodiscard]] float getZoom() const { return zoomValue; };
+
     private:
         raylib::Camera2D camera;
 
