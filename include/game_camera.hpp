@@ -1,33 +1,30 @@
 #ifndef JANUS_GAME_CAMERA_HPP
 #define JANUS_GAME_CAMERA_HPP
 
-#include <raylib-cpp.hpp>
-#include <glm/glm.hpp>
+#include <raylib.h>
+#include "glm/vec2.hpp"
+#include "components/components.hpp"
 
 namespace Janus {
-    class Player;
-    class GameCamera {
+    class GameCamera{
     public:
         GameCamera();
 
-        void start() { camera.BeginMode(); }
-        void end() { camera.EndMode(); }
+        void start() { BeginMode2D(camera); }
+        void end() { EndMode2D(); }
 
-        void update(float dt);
-        void setTargetPlayer(Player* player);
+        void update(float d);
+        void setTarget(ActorComponent& actor);
 
         [[nodiscard]] glm::vec2 getPos() const { return pos; };
-        [[nodiscard]] glm::vec2 getOffset() const { return {camera.GetOffset().x, camera.GetOffset().y}; };
+        [[nodiscard]] glm::vec2 getOffset() const { return {camera.offset.x, camera.offset.y}; };
         [[nodiscard]] float getZoom() const { return zoomValue; };
-
     private:
-        raylib::Camera2D camera;
-
+        Camera2D camera = {0};
         glm::vec2 pos{};
-
-        Player* targetPlayer = nullptr;
-
+        ActorComponent* targetActor = nullptr;
         float zoomValue = 1.0f;
+        float rotation = 0.0f;
     };
 }
 

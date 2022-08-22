@@ -1,161 +1,139 @@
 #include "tilemap.hpp"
-#include "chunk.hpp"
 #include "tile_math_helper.hpp"
 
 namespace Janus {
-    void Tilemap::tick() {
-        while(!tileTickScheduleQueue.empty()) {
-            tileTickSchedule.push_back(tileTickScheduleQueue.front());
-            tileTickScheduleQueue.pop();
-        }
-        auto it = tileTickSchedule.begin();
-        while (it != tileTickSchedule.end()) {
-            if (it->second == 0) {
-                it->first.get().scheduledTick();
-                it = tileTickSchedule.erase(it);
-            } else {
-                --it->second;
-                ++it;
-            }
-        }
+
+    void Tilemap::addChunk(Chunk *chunk) {
+        chunkMap.insert({ChunkCoord{chunk->getChunkX(), chunk->getChunkY()}, std::unique_ptr<Chunk>(chunk)});
     }
 
-    void Tilemap::addChunk(Chunk* chunk) {
-        chunkMap.insert({std::to_string(chunk->getChunkX()) + "," + std::to_string(chunk->getChunkY()), std::unique_ptr<Chunk>(chunk)});
-    }
-
-    void Tilemap::tickChunk(int chunkX, int chunkY) {
-        getChunk(chunkX, chunkY)->tick();
-    }
-
-    void Tilemap::clearRandomTickList() {
-        randomTickChunks.clear();
-    }
-
-    void Tilemap::addChunkToRandomTickList(int chunkX, int chunkY) {
-        std::string key = std::to_string(chunkX) + "," + std::to_string(chunkY);
-        if (std::find(randomTickChunks.begin(), randomTickChunks.end(), key) == randomTickChunks.end()) {
-            randomTickChunks.push_back(key);
-        }
-    }
-
-    void Tilemap::addChunksToRandomTickList(int centerX, int centerY, int radius) {
-        for (int i = centerY - radius; i <= centerY + radius; ++i) {
-            for (int j = centerX - radius; j <= centerX + radius; ++j) {
-                std::string key = std::to_string(j) + "," + std::to_string(i);
-                if (std::find(randomTickChunks.begin(), randomTickChunks.end(), key) == randomTickChunks.end()) {
-                    randomTickChunks.push_back(key);
+    void Tilemap::loadChunks(int centerChunkX, int centerChunkY, int radius) {
+        for (int i = centerChunkY - radius; i <= centerChunkY + radius; ++i) {
+            for (int j = centerChunkX - radius; j <= centerChunkX + radius; ++j) {
+                if (!chunkExistsAt(j, i)) {
+                    addChunk(new Chunk(j, i));
                 }
             }
         }
     }
 
-    void Tilemap::randomTick(unsigned short randomTickRate) {
-        for (const std::string& key : randomTickChunks) {
-            Chunk *chunk = getChunk(key);
-            if (chunk != nullptr) chunk->randomTick(randomTickRate);
+    void Tilemap::replaceGroundTileAt(int x, int y, GroundTileID id) {
+        auto[chunkX, chunkY, lx, ly] = TileMathHelper::tileCoordToChunkAndLocalChunkCoord(x, y);
+        Chunk* chunk = getChunkAt(chunkX, chunkY);
+        if (chunk != nullptr) {
+            chunk->replaceGroundTileAt(lx, ly, id);
+            chunk->requestTextureUpdate(true);
         }
     }
 
-    void Tilemap::scheduleTileTick(Tile& tile, unsigned int delay) {
-        tileTickScheduleQueue.push({std::ref(tile), (int)delay});
+    void Tilemap::replaceGroundTileAt(int x, int y, GroundTile* gt) {
+        auto[chunkX, chunkY, lx, ly] = TileMathHelper::tileCoordToChunkAndLocalChunkCoord(x, y);
+        Chunk* chunk = getChunkAt(chunkX, chunkY);
+        if (chunk != nullptr) {
+            chunk->replaceGroundTileAt(lx, ly, gt);
+            chunk->requestTextureUpdate(true);
+        }
     }
 
-    bool Tilemap::chunkExistsAt(int chunkX, int chunkY) {
-        std::string key = std::to_string(chunkX) + "," + std::to_string(chunkY);
-        auto it = chunkMap.find(key);
+    void Tilemap::replaceObjectTileAt(int x, int y, ObjectTileID id) {
+        auto[chunkX, chunkY, lx, ly] = TileMathHelper::tileCoordToChunkAndLocalChunkCoord(x, y);
+        Chunk* chunk = getChunkAt(chunkX, chunkY);
+        if (chunk != nullptr) {
+            chunk->replaceObjectTileAt(lx, ly, id);
+            chunk->requestTextureUpdate(true);
+            updateChunkTexturesAroundTile(chunkX, chunkY, lx, ly);
+        }
+    }
+
+    void Tilemap::replaceObjectTileAt(int x, int y, ObjectTile* ot) {
+        auto[chunkX, chunkY, lx, ly] = TileMathHelper::tileCoordToChunkAndLocalChunkCoord(x, y);
+        Chunk* chunk = getChunkAt(chunkX, chunkY);
+        if (chunk != nullptr) {
+            chunk->replaceObjectTileAt(lx, ly, ot);
+            chunk->requestTextureUpdate(true);
+            updateChunkTexturesAroundTile(chunkX, chunkY, lx, ly);
+        }
+    }
+
+    bool Tilemap::chunkExistsAt(int chunkX, int chunkY) const {
+        auto it = chunkMap.find({chunkX, chunkY});
         if (it != chunkMap.end()) {
             return true;
         }
         return false;
     }
 
-    Chunk* Tilemap::getChunk(int chunkX, int chunkY) {
-        std::string key = std::to_string(chunkX) + "," + std::to_string(chunkY);
-        auto it = chunkMap.find(key);
+    Chunk* Tilemap::getChunkAt(int chunkX, int chunkY) const {
+        auto it = chunkMap.find({chunkX, chunkY});
         if (it != chunkMap.end()) {
-            return chunkMap.at(key).get();
+            return chunkMap.at({chunkX, chunkY}).get();
         }
         return nullptr;
     }
 
-    Chunk* Tilemap::getChunk(const std::string& key) {
-        auto it = chunkMap.find(key);
-        if (it != chunkMap.end()) {
-            return chunkMap.at(key).get();
-        }
-        return nullptr;
-    }
-
-    Tile* Tilemap::getTileAt(int tileX, int tileY) {
-        auto [chunkX, chunkY, localX, localY] = TileMathHelper::tileCoordToChunkAndLocalChunkCoord(tileX, tileY);
-        Chunk* chunk = getChunk(chunkX, chunkY);
+    GroundTile* Tilemap::getGroundTileAt(int x, int y) const {
+        auto[chunkX, chunkY, lx, ly] = TileMathHelper::tileCoordToChunkAndLocalChunkCoord(x, y);
+        Chunk* chunk = getChunkAt(chunkX, chunkY);
         if (chunk != nullptr) {
-            return &chunk->getTileAt(localX, localY);
+            return &chunk->getGroundTileAt(lx, ly);
+        }
+        return nullptr;//GroundTileID::NONE;
+    }
+
+    ObjectTile* Tilemap::getObjectTileAt(int x, int y) const {
+        auto[chunkX, chunkY, lx, ly] = TileMathHelper::tileCoordToChunkAndLocalChunkCoord(x, y);
+        Chunk* chunk = getChunkAt(chunkX, chunkY);
+        if (chunk != nullptr) {
+            return &chunk->getObjectTileAt(lx, ly);
         }
         return nullptr;
     }
 
-    void Tilemap::replaceTileAt(int tileX, int tileY, Tile* tile) {
-        auto [chunkX, chunkY, localX, localY] = TileMathHelper::tileCoordToChunkAndLocalChunkCoord(tileX, tileY);
-        Chunk* chunk = getChunk(chunkX, chunkY);
-        if (chunk != nullptr) {
-            removeTileFromSchedule(chunk->getTileAt(localX, localY));
-            chunk->getMap()[Chunk::CHUNK_SIZE*localY + localX].reset(tile);
-            chunk->requestTextureUpdate();
-
-            if (localX == 0) {
-                if(getChunk(chunkX-1, chunkY) != nullptr)
-                    getChunk(chunkX-1, chunkY)->requestTextureUpdate();
-            }
-            if (localY == 0) {
-                if(getChunk(chunkX, chunkY-1) != nullptr)
-                    getChunk(chunkX, chunkY-1)->requestTextureUpdate();
-            }
-            if (localX == Chunk::CHUNK_SIZE-1) {
-                if(getChunk(chunkX+1, chunkY) != nullptr)
-                    getChunk(chunkX+1, chunkY)->requestTextureUpdate();
-            }
-            if (localY == Chunk::CHUNK_SIZE-1) {
-                if(getChunk(chunkX, chunkY+1) != nullptr)
-                    getChunk(chunkX, chunkY+1)->requestTextureUpdate();
-            }
-        }
-    }
-
-    std::vector<std::reference_wrapper<Tile>> Tilemap::getTilesInRange(int x1, int y1, int x2, int y2) {
-        std::vector<std::reference_wrapper<Tile>> output;
+    std::vector<std::reference_wrapper<ObjectTile>> Tilemap::getObjectTilesInRange(int x1, int y1, int x2, int y2) const {
+        std::vector<std::reference_wrapper<ObjectTile>> output;
         for (int i = y1; i <= y2; ++i) {
             for (int j = x1; j <= x2; ++j) {
-                int chunkX = j >= 0 ? j / Chunk::CHUNK_SIZE : (j - Chunk::CHUNK_SIZE+1) / Chunk::CHUNK_SIZE;
-                int chunkY = i >= 0 ? i / Chunk::CHUNK_SIZE : (i - Chunk::CHUNK_SIZE+1) / Chunk::CHUNK_SIZE;
-                Chunk* chunk = getChunk(chunkX, chunkY);
+                auto [chunkX, chunkY] = TileMathHelper::tileCoordToChunk(j, i);
+                Chunk* chunk = getChunkAt(chunkX, chunkY);
                 if (chunk != nullptr) {
                     int tileX = j - chunkX*Chunk::CHUNK_SIZE;
                     int tileY = i - chunkY*Chunk::CHUNK_SIZE;
-                    output.emplace_back(chunk->getTileAt(tileX, tileY));
+                    output.emplace_back(chunk->getObjectTileAt(tileX, tileY));
                 }
             }
         }
         return output;
     }
 
-    std::unordered_map<std::string, std::unique_ptr<Chunk>>& Tilemap::getChunkMap(){
-        return chunkMap;
-    }
-
-    void Tilemap::removeTileFromSchedule(Tile& tile) {
-        while(!tileTickScheduleQueue.empty()) {
-            tileTickSchedule.push_back(tileTickScheduleQueue.front());
-            tileTickScheduleQueue.pop();
-        }
-        auto it = tileTickSchedule.begin();
-        while (it != tileTickSchedule.end()) {
-            if (&(it->first.get()) == &tile) {
-                it = tileTickSchedule.erase(it);
-            } else {
-                ++it;
+    void Tilemap::updateChunkTexturesAroundTile(int chunkX, int chunkY, int localX, int localY) {
+        if (localX == 0) {
+            if(getChunkAt(chunkX-1, chunkY) != nullptr)
+                getChunkAt(chunkX-1, chunkY)->requestTextureUpdate(true);
+            if (localY == 0) {
+                if(getChunkAt(chunkX-1, chunkY-1) != nullptr)
+                    getChunkAt(chunkX-1, chunkY-1)->requestTextureUpdate(true);
+            } else if (localY == Chunk::CHUNK_SIZE-1) {
+                if(getChunkAt(chunkX-1, chunkY+1) != nullptr)
+                    getChunkAt(chunkX-1, chunkY+1)->requestTextureUpdate(true);
+            }
+        } else if (localX == Chunk::CHUNK_SIZE-1) {
+            if (getChunkAt(chunkX+1, chunkY) != nullptr)
+                getChunkAt(chunkX+1, chunkY)->requestTextureUpdate(true);
+            if (localY == 0) {
+                if(getChunkAt(chunkX+1, chunkY-1) != nullptr)
+                    getChunkAt(chunkX+1, chunkY-1)->requestTextureUpdate(true);
+            } else if (localY == Chunk::CHUNK_SIZE-1) {
+                if(getChunkAt(chunkX+1, chunkY+1) != nullptr)
+                    getChunkAt(chunkX+1, chunkY+1)->requestTextureUpdate(true);
             }
         }
+        if (localY == 0) {
+            if (getChunkAt(chunkX, chunkY-1) != nullptr)
+                getChunkAt(chunkX, chunkY-1)->requestTextureUpdate(true);
+        } else if (localY == Chunk::CHUNK_SIZE-1) {
+            if (getChunkAt(chunkX, chunkY+1) != nullptr)
+                getChunkAt(chunkX, chunkY+1)->requestTextureUpdate(true);
+        }
     }
+
 }

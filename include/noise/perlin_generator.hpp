@@ -11,8 +11,8 @@ namespace Janus {
             perlin = siv::PerlinNoise{noise_seed};
         }
 
-        static double getValueAt(float x, float y, float multiplier) {
-            return perlin.octave2D_01(x * multiplier, y * multiplier, 4);
+        static double getValueAt(float x, float y, float multiplier, int octaves) {
+            return perlin.octave2D_01(x * multiplier, y * multiplier, octaves);
         }
 
     private:

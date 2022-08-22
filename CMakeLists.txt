@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
-project(Janus VERSION 0.0.1)
+project(Janus)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 # Dependencies
 # raylib
@@ -21,24 +21,48 @@ if (NOT raylib_FOUND) # If there's none, fetch and build raylib
     endif()
 endif()
 
-# raylib-cpp
-find_package(raylib_cpp QUIET)
-if (NOT raylib_cpp_FOUND)
-    include(FetchContent)
-    FetchContent_Declare(
-            raylib_cpp
-            GIT_REPOSITORY https://github.com/RobLoach/raylib-cpp.git
-            GIT_TAG v4.2.2
-    )
-    FetchContent_MakeAvailable(raylib_cpp)
-endif()
-
 include_directories(include)
 
-set(SOURCES src/main.cpp include/game_object.hpp include/entity_handler.hpp src/entity_handler.cpp include/player.hpp include/texture_manager.hpp src/texture_manager.cpp include/actor.hpp src/actor.cpp include/physics/collisions.hpp src/physics/collisions.cpp include/tile.hpp include/tilemap.hpp include/chunk.hpp include/game.hpp src/game.cpp include/game_camera.hpp include/random_generator.hpp src/random_generator.cpp src/tilemap.cpp src/chunk.cpp include/entity_renderer.hpp src/entity_renderer.cpp include/ground_tile.hpp include/object_tile.hpp include/tile_math_helper.hpp include/noise/perlin_generator.hpp src/noise/perlin_generator.cpp include/global_values.hpp include/drone.hpp include/chunk_renderer.hpp src/chunk_renderer.cpp src/game_camera.cpp include/wall_tile_renderer.hpp include/input_manager.hpp src/input_manager.cpp src/wall_tile_renderer.cpp)
+set(SOURCES src/main.cpp
+        include/world.hpp
+        include/game.hpp
+        include/tilemap.hpp
+        include/game_camera.hpp
+        src/world.cpp
+        src/game.cpp
+        src/tilemap.cpp
+        src/game_camera.cpp
+        include/global_values.hpp
+        include/chunk.hpp src/chunk.cpp
+        include/tile_data.hpp
+        include/systems/tilemap_tick_system.hpp
+        include/tile_math_helper.hpp
+        include/systems/tilemap_render_system.hpp
+        include/entities/entity.hpp
+        include/components/components.hpp
+        include/entities/player_entity.hpp
+        include/systems/actor_render_system.hpp
+        include/systems/tick_system.hpp
+        include/systems/render_system.hpp
+        include/systems/actor_tick_system.hpp
+        include/physics/collisions.hpp
+        src/physics/collisions.cpp
+        src/noise/perlin_generator.cpp
+        include/noise/perlin_generator.hpp
+        include/systems/movement_system.hpp
+        include/systems/player_tick_system.hpp
+        include/renderer/chunk_renderer.hpp
+        src/renderer/chunk_renderer.cpp
+        include/renderer/block_tile_renderer.hpp
+        src/renderer/block_tile_renderer.cpp
+        include/texture_manager.hpp
+        src/texture_manager.cpp
+        src/tile_math_helper.cpp
+        include/input_manager.hpp
+        src/input_manager.cpp include/systems/startup_system.hpp include/systems/tilemap_preload_system.hpp)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
-target_link_libraries(${PROJECT_NAME} raylib raylib_cpp)
+target_link_libraries(${PROJECT_NAME} raylib)
 
 # Checks if OSX and links appropriate frameworks (Only required on MacOS)
 if (APPLE)
@@ -53,8 +77,6 @@ function(copy_resources)
         configure_file(${arg} ${arg} COPYONLY)
     endforeach()
 endfunction()
-copy_resources(
-        resources/slime.png
-        resources/stone_wall_sheet.png
-        resources/player.png
-        )
+copy_resources( resources/player.png
+                resources/stone_wall_sheet.png
+                resources/slime.png)

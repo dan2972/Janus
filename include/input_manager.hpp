@@ -3,41 +3,29 @@
 
 #include <map>
 #include <string>
-#include <raylib-cpp.hpp>
+#include <raylib.h>
 
 namespace Janus {
     class InputManager{
     public:
         static void Initialize();
-        static bool PlayerPlaceDown() {
-            if(IsMouseButtonDown(inputMap.find("playerPlace")->second))
-                return true;
-            return false;
+        static bool PlayerUse() {
+            return IsMouseButtonDown(inputMap.find("player_use")->second);
         }
-        static bool PlayerAttackDown() {
-            if(IsMouseButtonDown(inputMap.find("playerAttack")->second))
-                return true;
-            return false;
+        static bool PlayerAttack() {
+            return IsMouseButtonDown(inputMap.find("player_attack")->second);
         }
-        static bool MoveRightDown() {
-            if(IsKeyDown(inputMap.find("moveRight")->second))
-                return true;
-            return false;
+        static bool MoveRight() {
+            return IsKeyDown(inputMap.find("move_right")->second);
         }
-        static bool MoveLeftDown() {
-            if(IsKeyDown(inputMap.find("moveLeft")->second))
-                return true;
-            return false;
+        static bool MoveLeft() {
+            return IsKeyDown(inputMap.find("move_left")->second);
         }
-        static bool MoveUpDown() {
-            if(IsKeyDown(inputMap.find("moveUp")->second))
-                return true;
-            return false;
+        static bool MoveUp() {
+            return IsKeyDown(inputMap.find("move_up")->second);
         }
-        static bool MoveDownDown() {
-            if(IsKeyDown(inputMap.find("moveDown")->second))
-                return true;
-            return false;
+        static bool MoveDown() {
+            return IsKeyDown(inputMap.find("move_down")->second);
         }
 
     private:

@@ -1,11 +1,7 @@
 #include "game.hpp"
 
-using namespace Janus;
-
 int main() {
-
-    Game game;
+    Janus::Game game;
     game.run();
-
     return 0;
 }

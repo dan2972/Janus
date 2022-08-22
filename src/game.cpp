@@ -1,47 +1,63 @@
+#include <raylib.h>
+#include <string>
 #include "game.hpp"
+#include "global_values.hpp"
+#include "entities/player_entity.hpp"
+#include "systems/actor_render_system.hpp"
+#include "systems/tilemap_render_system.hpp"
+#include "systems/tilemap_tick_system.hpp"
+#include "systems/actor_tick_system.hpp"
+#include "systems/player_tick_system.hpp"
+#include "systems/movement_system.hpp"
+#include "systems/tilemap_preload_system.hpp"
 #include "texture_manager.hpp"
-#include "random_generator.hpp"
-#include "noise/perlin_generator.hpp"
-#include "drone.hpp"
 #include "input_manager.hpp"
 
 namespace Janus {
     Game::Game() {
-        //SetTargetFPS(60);
-        window.ClearState(FLAG_VSYNC_HINT);
-        SetTraceLogLevel(LOG_FATAL | LOG_ERROR | LOG_WARNING);
+        SetTraceLogLevel(LOG_ERROR | LOG_FATAL);
+
+        InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Janus");
+
+        ClearWindowState(FLAG_VSYNC_HINT);
+
+        TextureManager::Load("resources/slime.png");
+        TextureManager::Load("resources/stone_wall_sheet.png");
 
         InputManager::Initialize();
 
-        TextureManager::LoadTexture("resources/slime.png");
-        TextureManager::LoadTexture("resources/player.png");
-        TextureManager::LoadTexture("resources/stone_wall_sheet.png");
-        player = new Player(10, 10, &entityHandler, &camera);
-        entityHandler.add(player);
-        //for (int i = 0; i < 1000; ++i)
-        //    entityHandler.add(new Drone(0, 0, &entityHandler));
+        world.registerStartupSystem<TilemapPreloadSystem>();
 
-        camera.setTargetPlayer(player);
+        world.registerTickSystem<TilemapTickSystem>();
+        world.registerTickSystem<MovementSystem>();
+        world.registerTickSystem<PlayerTickSystem>();
+        world.registerTickSystem<ActorTickSystem>();
 
-        RandomGenerator::setSeed(1);
-        PerlinGenerator::initialize(1);
+        world.registerRenderSystem<TilemapRenderSystem>();
+        world.registerRenderSystem<ActorRenderSystem>();
 
-        window.BeginDrawing();
-        window.ClearBackground(GRAY);
-        raylib::DrawText(std::string("LOADING CHUNKS"), SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2, 20, WHITE);
-        window.EndDrawing();
-        entityHandler.loadChunks(0, 0, CHUNK_PRELOAD_DISTANCE+1);
-        entityHandler.preloadTilemapTextures(camera, 0, 0);
+        world.spawnEntity<PlayerEntity>(glm::vec2(10, 10));
+        auto view = world.getEntitiesWith<PlayerComponent>();
+        for (auto player : view) {
+            auto& actor = world.getComponentFromEntity<ActorComponent>(player);
+            camera.setTarget(actor);
+        }
+
+        BeginDrawing();
+        ClearBackground(BLACK);
+        DrawText("Loading Chunks", SCREEN_WIDTH / 2 - 80, SCREEN_HEIGHT / 2 - 10, 20, WHITE);
+        EndDrawing();
+        world.initialize();
     }
 
     void Game::run() {
         double lastTime = GetTime();
-        double amountOfTicks = 40.0;
+        double amountOfTicks = TICKS_PER_SECOND;
         double tps = 1.0 / amountOfTicks;
         double delta = 0;
         double timer = GetTime();
         int frames = 0;
-        while (!window.ShouldClose()) {
+        while (!WindowShouldClose()) {
             double now = GetTime();
             delta += (now - lastTime) / tps;
             lastTime = now;
@@ -49,7 +65,7 @@ namespace Janus {
                 update();
                 delta--;
             }
-            render((float)delta);
+            render(static_cast<float>(delta));
             ++frames;
 
             if (GetTime() - timer > 1) {
@@ -58,28 +74,29 @@ namespace Janus {
                 frames = 0;
             }
         }
+
+        CloseWindow();
     }
 
     void Game::update() {
-        entityHandler.update();
+        world.tick();
     }
 
-    void Game::render(float dt) {
-        camera.update(dt);
+    void Game::render(float d) {
+        camera.update(d);
 
-        window.BeginDrawing();
+        BeginDrawing();
 
-            window.ClearBackground(BLACK);
+            ClearBackground(BLACK);
 
             camera.start();
 
-                entityHandler.render(camera, player->getChunkPos().x, player->getChunkPos().y, dt);
+                world.render(d);
 
             camera.end();
 
             DrawText(std::string("FPS: " + std::to_string(FPS)).c_str(), 10, SCREEN_HEIGHT - 30, 16, WHITE);
 
-        //window.DrawFPS(10, 570);
-        window.EndDrawing();
+        EndDrawing();
     }
 }

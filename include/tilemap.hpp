@@ -2,49 +2,31 @@
 #define JANUS_TILEMAP_HPP
 
 #include <unordered_map>
-#include <string>
-#include <vector>
-#include <queue>
+#include "chunk.hpp"
 
 namespace Janus {
-    class Tile;
-    class Chunk;
-    class Tilemap {
+    class Tilemap{
     public:
         Tilemap() = default;
 
-        void tick();
-
         void addChunk(Chunk* chunk);
-        void tickChunk(int chunkX, int chunkY);
+        void loadChunks(int centerChunkX, int centerChunkY, int radius);
+        void replaceGroundTileAt(int x, int y, GroundTileID id);
+        void replaceObjectTileAt(int x, int y, ObjectTileID id);
+        void replaceGroundTileAt(int x, int y, GroundTile* ot);
+        void replaceObjectTileAt(int x, int y, ObjectTile* ot);
 
-        void clearRandomTickList();
-        void addChunkToRandomTickList(int chunkX, int chunkY);
-        void addChunksToRandomTickList(int centerX, int centerY, int radius);
-        void randomTick(unsigned short randomTickRate);
-        void scheduleTileTick(Tile& tile, unsigned int delay);
-
-        bool chunkExistsAt(int chunkX, int chunkY);
-        Chunk* getChunk(int chunkX, int chunkY);
-        Chunk* getChunk(const std::string& key);
-
-        Tile* getTileAt(int tileX, int tileY);
-
-        void replaceTileAt(int tileX, int tileY, Tile* tile);
-
-        // Returns a vector of tiles from x1, y2 (top left) to x2, y2 (bottom right)
-        std::vector<std::reference_wrapper<Tile>> getTilesInRange(int x1, int y1, int x2, int y2);
-        std::unordered_map<std::string, std::unique_ptr<Chunk>>& getChunkMap();
-
-        [[nodiscard]] unsigned int getRandomTickChunkSize() const { return randomTickChunks.size(); }
+        [[nodiscard]] bool chunkExistsAt(int chunkX, int chunkY) const;
+        [[nodiscard]] Chunk* getChunkAt(int chunkX, int chunkY) const;
+        [[nodiscard]] GroundTile* getGroundTileAt(int x, int y) const;
+        [[nodiscard]] ObjectTile* getObjectTileAt(int x, int y) const;
+        [[nodiscard]] std::vector<std::reference_wrapper<ObjectTile>>
+            getObjectTilesInRange(int x1, int y1, int x2, int y2) const;
 
     private:
-        void removeTileFromSchedule(Tile& tile);
+        void updateChunkTexturesAroundTile(int chunkX, int chunkY, int localX, int localY);
 
-        std::unordered_map<std::string, std::unique_ptr<Chunk>> chunkMap;
-        std::vector<std::string> randomTickChunks;
-        std::vector<std::pair<std::reference_wrapper<Tile>, int>> tileTickSchedule;
-        std::queue<std::pair<std::reference_wrapper<Tile>, int>> tileTickScheduleQueue;
+        std::unordered_map<ChunkCoord, std::unique_ptr<Chunk>, HashFunc, EqualsFunc> chunkMap;
     };
 }
 
